@@ -1,0 +1,82 @@
+<div class="container">
+  <div class="header">
+    <h1>Cotización Dólar</h1>
+    <button (click)="volverHome()" class="btn-volver">Volver al Inicio</button>
+  </div>
+
+  <div class="row">
+    <!-- Formulario -->
+    <div class="col-md-6">
+      <h3>Nueva Cotización</h3>
+      <form [formGroup]="cotizacionForm" (ngSubmit)="onSubmit()" class="form-container">
+        <div class="form-group">
+          <label for="fecha">Fecha:</label>
+          <input 
+            type="date" 
+            id="fecha" 
+            formControlName="fecha"
+            class="form-control">
+        </div>
+
+        <div class="form-group">
+          <label for="precioCompra">Precio Compra:</label>
+          <input 
+            type="number" 
+            id="precioCompra" 
+            formControlName="precioCompra"
+            class="form-control"
+            step="0.01">
+        </div>
+
+        <div class="form-group">
+          <label for="precioVenta">Precio Venta:</label>
+          <input 
+            type="number" 
+            id="precioVenta" 
+            formControlName="precioVenta"
+            class="form-control"
+            step="0.01">
+        </div>
+
+        <div class="form-group">
+          <label>Precio Intermedio:</label>
+          <div class="precio-intermedio">{{ precioIntermedio | number:'1.2-2' }}</div>
+        </div>
+
+        <button 
+          type="submit" 
+          class="btn-submit"
+          [disabled]="!cotizacionForm.valid">
+          Guardar Cotización
+        </button>
+      </form>
+    </div>
+
+    <!-- Lista -->
+    <div class="col-md-6">
+      <h3>Historial de Cotizaciones</h3>
+      <div class="cotizaciones-list">
+        <table class="table table-striped">
+          <thead>
+            <tr>
+              <th>Fecha</th>
+              <th>Compra</th>
+              <th>Venta</th>
+              <th>Intermedio</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (cotizacion of cotizaciones; track cotizacion.id) {
+              <tr>
+                <td>{{cotizacion.fecha | date:'dd/MM/yyyy'}}</td>
+                <td>{{cotizacion.precioCompra | number:'1.2-2'}}</td>
+                <td>{{cotizacion.precioVenta | number:'1.2-2'}}</td>
+                <td>{{cotizacion.precioIntermedio | number:'1.2-2'}}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
