@@ -1,0 +1,66 @@
+<div class="container">
+  <h2>Gestión de Tipos de Gasto</h2>
+
+  <!-- Formulario -->
+  <div class="form-container">
+    <h3>{{ editando ? 'Editar' : 'Nuevo' }} Tipo de Gasto</h3>
+    <form (ngSubmit)="guardarTipoGasto()">
+      <div class="form-group">
+        <label for="nombre">Nombre:</label>
+        <input 
+          type="text" 
+          id="nombre" 
+          [(ngModel)]="nuevoTipoGasto.nombre" 
+          name="nombre" 
+          required>
+      </div>
+
+      <div class="form-group">
+        <label for="descripcion">Descripción:</label>
+        <textarea 
+          id="descripcion" 
+          [(ngModel)]="nuevoTipoGasto.descripcion" 
+          name="descripcion" 
+          rows="3">
+        </textarea>
+      </div>
+
+      <div class="button-group">
+        <button type="submit" class="btn-primary">
+          {{ editando ? 'Actualizar' : 'Guardar' }}
+        </button>
+        <button type="button" class="btn-secondary" (click)="limpiarFormulario()">
+          Cancelar
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Lista de Tipos de Gasto -->
+  <div class="list-container">
+    <h3>Lista de Tipos de Gasto</h3>
+    <table>
+      <thead>
+        <tr>
+          <th>Nombre</th>
+          <th>Descripción</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let tipo of tiposGasto">
+          <td>{{ tipo.nombre }}</td>
+          <td>{{ tipo.descripcion }}</td>
+          <td>
+            <button class="btn-edit" (click)="editarTipoGasto(tipo)">
+              Editar
+            </button>
+            <button class="btn-delete" (click)="eliminarTipoGasto(tipo.id)">
+              Eliminar
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

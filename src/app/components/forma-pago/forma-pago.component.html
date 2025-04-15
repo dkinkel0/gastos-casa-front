@@ -1,0 +1,96 @@
+<div class="container">
+  <h2>{{ editandoId ? 'Editar' : 'Nueva' }} Forma de Pago</h2>
+  
+  <form [formGroup]="formaPagoForm" (ngSubmit)="onSubmit()">
+    <div class="form-group">
+      <label for="tipo">Tipo de Pago *</label>
+      <select class="form-control" id="tipo" formControlName="tipo">
+        <option value="">Seleccione tipo de pago</option>
+        <option *ngFor="let tipo of tiposPago" [value]="tipo">{{tipo}}</option>
+      </select>
+      <div class="error-message" *ngIf="formaPagoForm.get('tipo')?.errors?.['required'] && formaPagoForm.get('tipo')?.touched">
+        El tipo de pago es requerido
+      </div>
+    </div>
+
+    <ng-container *ngIf="formaPagoForm.get('tipo')?.value === 'TARJETA'">
+      <div class="form-group">
+        <label for="banco">Banco *</label>
+        <input type="text" class="form-control" id="banco" formControlName="banco" placeholder="Ingrese el banco">
+        <div class="error-message" *ngIf="formaPagoForm.get('banco')?.errors?.['required'] && formaPagoForm.get('banco')?.touched">
+          El banco es requerido
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="marcaTarjeta">Marca de Tarjeta *</label>
+        <select class="form-control" id="marcaTarjeta" formControlName="marcaTarjeta">
+          <option value="">Seleccione marca de tarjeta</option>
+          <option *ngFor="let marca of marcasTarjeta" [value]="marca">{{marca}}</option>
+        </select>
+        <div class="error-message" *ngIf="formaPagoForm.get('marcaTarjeta')?.errors?.['required'] && formaPagoForm.get('marcaTarjeta')?.touched">
+          La marca de tarjeta es requerida
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="diaCierre">Día de Cierre</label>
+        <input type="number" class="form-control" id="diaCierre" formControlName="diaCierre" min="1" max="31">
+      </div>
+
+      <div class="form-group">
+        <label for="diaVencimiento">Día de Vencimiento</label>
+        <input type="number" class="form-control" id="diaVencimiento" formControlName="diaVencimiento" min="1" max="31">
+      </div>
+    </ng-container>
+
+    <div class="form-check">
+      <input type="checkbox" class="form-check-input" id="activo" formControlName="activo">
+      <label class="form-check-label" for="activo">Activo</label>
+    </div>
+
+    <button type="submit" [disabled]="!formaPagoForm.valid">
+      {{ editandoId ? 'Actualizar' : 'Guardar' }}
+    </button>
+  </form>
+
+  <h3 class="mt-4">Formas de Pago Disponibles</h3>
+  
+  <div class="table-responsive">
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th>Tipo</th>
+          <th>Banco</th>
+          <th>Marca</th>
+          <th>Día Cierre</th>
+          <th>Día Vencimiento</th>
+          <th>Estado</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let forma of formasPago">
+          <td>{{forma.tipo}}</td>
+          <td>{{forma.banco || '-'}}</td>
+          <td>{{forma.marcaTarjeta || '-'}}</td>
+          <td>{{forma.diaCierre || '-'}}</td>
+          <td>{{forma.diaVencimiento || '-'}}</td>
+          <td>
+            <span [class]="forma.activo ? 'badge bg-success' : 'badge bg-danger'">
+              {{forma.activo ? 'Activo' : 'Inactivo'}}
+            </span>
+          </td>
+          <td>
+            <button class="btn btn-primary btn-sm" (click)="editarFormaPago(forma)">
+              Editar
+            </button>
+          </td>
+        </tr>
+        <tr *ngIf="formasPago.length === 0">
+          <td colspan="7" class="text-center">No hay formas de pago registradas</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
