@@ -1,0 +1,52 @@
+<div class="gasto-form-container">
+  <h2>Registrar Nuevo Gasto</h2>
+  
+  <form [formGroup]="gastoForm" (ngSubmit)="onSubmit()">
+    <div class="form-group">
+      <label for="fecha">Fecha:</label>
+      <input type="date" id="fecha" formControlName="fecha">
+    </div>
+
+    <div class="form-group">
+      <label for="detalle">Detalle:</label>
+      <input type="text" id="detalle" formControlName="detalle">
+    </div>
+
+    <div class="form-group">
+      <label for="tipo">Tipo de Gasto:</label>
+      <select id="tipo" formControlName="tipo">
+        <option value="">Seleccione un tipo</option>
+        <option *ngFor="let tipo of tiposGasto" [value]="tipo.id">
+          {{tipo.nombre}}
+        </option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label for="costo">Costo:</label>
+      <input type="number" id="costo" formControlName="costo" min="0">
+    </div>
+
+    <div class="form-group">
+      <label for="costoDolar">Costo en Dólares (opcional):</label>
+      <input type="number" id="costoDolar" formControlName="costoDolar" min="0">
+    </div>
+
+    <div class="form-group">
+      <label for="formaPago">Forma de Pago:</label>
+      <select id="formaPago" formControlName="formaPago">
+        <option value="">Seleccione forma de pago</option>
+        <option *ngFor="let forma of formasPago" [value]="forma.id">
+          {{forma.nombre}}
+        </option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label for="cuotas">Cuotas (opcional):</label>
+      <input type="number" id="cuotas" formControlName="cuotas" min="1">
+    </div>
+
+    <button type="submit" [disabled]="!gastoForm.valid">Guardar Gasto</button>
+  </form>
+</div>
