@@ -3,8 +3,11 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
 export interface Cotizacion {
+  id?: number;
   fecha: string;
-  valor: number;
+  precioCompra: number;
+  precioVenta: number;
+  precioIntermedio: number;
 }
 
 export interface Gasto {
@@ -22,7 +25,7 @@ export interface Gasto {
   providedIn: 'root'
 })
 export class GastoService {
-  private apiUrl = 'http://localhost:3535/api';
+  private apiUrl = 'http://localhost:8585/api';
 
   constructor(private http: HttpClient) { }
 

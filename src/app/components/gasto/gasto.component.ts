@@ -60,8 +60,10 @@ export class GastoComponent implements OnInit {
   }
 
   cargarFormasPago() {
+    console.log('Cargando formas de pago...');
     this.formaPagoService.getFormasPago().subscribe({
       next: (formas) => {
+        console.log('Formas de pago recibidas:', formas);
         this.formasPago = formas;
       },
       error: (error) => {
@@ -78,7 +80,7 @@ export class GastoComponent implements OnInit {
     if (fecha && costo) {
       this.gastoService.getCotizacionDolar(fecha).subscribe({
         next: (cotizacion) => {
-          const costoDolar = costo / cotizacion.valor;
+          const costoDolar = costo / cotizacion.precioIntermedio;
           this.gastoForm.patchValue({
             costoDolar: costoDolar.toFixed(2)
           }, { emitEvent: false });

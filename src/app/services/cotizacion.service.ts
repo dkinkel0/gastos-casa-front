@@ -7,7 +7,7 @@ import { Observable } from 'rxjs';
 })
 
 export class CotizacionService {
-  private apiUrl = 'http://localhost:8585/api/cotizaciones'; // Corregido al puerto 8585
+  private apiUrl = 'http://localhost:8585/api/cotizacion'; // Corregido al puerto 8585
 
   constructor(private http: HttpClient) { }
 
