@@ -1,52 +1,91 @@
 <div class="gasto-form-container">
   <h2>Registrar Nuevo Gasto</h2>
   
-  <form [formGroup]="gastoForm" (ngSubmit)="onSubmit()">
+  <form [formGroup]="gastoForm" (ngSubmit)="onSubmit()" class="gasto-form">
     <div class="form-group">
       <label for="fecha">Fecha:</label>
-      <input type="date" id="fecha" formControlName="fecha">
+      <input 
+        type="date" 
+        id="fecha" 
+        formControlName="fecha" 
+        class="form-control">
     </div>
 
     <div class="form-group">
       <label for="detalle">Detalle:</label>
-      <input type="text" id="detalle" formControlName="detalle">
+      <input 
+        type="text" 
+        id="detalle" 
+        formControlName="detalle" 
+        class="form-control"
+        placeholder="Ingrese el detalle del gasto">
     </div>
 
     <div class="form-group">
-      <label for="tipo">Tipo de Gasto:</label>
-      <select id="tipo" formControlName="tipo">
+      <label for="tipo">Tipo:</label>
+      <select 
+        id="tipo" 
+        formControlName="tipo" 
+        class="form-control">
         <option value="">Seleccione un tipo</option>
         <option *ngFor="let tipo of tiposGasto" [value]="tipo.id">
-          {{tipo.nombre}}
+          {{tipo.descripcion}}
         </option>
       </select>
     </div>
 
     <div class="form-group">
-      <label for="costo">Costo:</label>
-      <input type="number" id="costo" formControlName="costo" min="0">
+      <label for="costo">Costo (ARS):</label>
+      <input 
+        type="number" 
+        id="costo" 
+        formControlName="costo" 
+        class="form-control"
+        min="0"
+        step="0.01"
+        placeholder="Ingrese el costo en pesos">
     </div>
 
     <div class="form-group">
-      <label for="costoDolar">Costo en Dólares (opcional):</label>
-      <input type="number" id="costoDolar" formControlName="costoDolar" min="0">
+      <label for="costoDolar">Costo (USD):</label>
+      <input 
+        type="number" 
+        id="costoDolar" 
+        formControlName="costoDolar" 
+        class="form-control"
+        readonly>
     </div>
 
     <div class="form-group">
       <label for="formaPago">Forma de Pago:</label>
-      <select id="formaPago" formControlName="formaPago">
+      <select 
+        id="formaPago" 
+        formControlName="formaPago" 
+        class="form-control">
         <option value="">Seleccione forma de pago</option>
         <option *ngFor="let forma of formasPago" [value]="forma.id">
-          {{forma.nombre}}
+          {{forma.descripcion}}
         </option>
       </select>
     </div>
 
-    <div class="form-group">
-      <label for="cuotas">Cuotas (opcional):</label>
-      <input type="number" id="cuotas" formControlName="cuotas" min="1">
+    <div class="form-group" *ngIf="mostrarCampoCuotas()">
+      <label for="cuotas">Cuotas:</label>
+      <input 
+        type="number" 
+        id="cuotas" 
+        formControlName="cuotas" 
+        class="form-control"
+        min="1"
+        step="1"
+        placeholder="Número de cuotas">
     </div>
 
-    <button type="submit" [disabled]="!gastoForm.valid">Guardar Gasto</button>
+    <button 
+      type="submit" 
+      class="btn btn-primary"
+      [disabled]="!gastoForm.valid">
+      Guardar Gasto
+    </button>
   </form>
 </div>
