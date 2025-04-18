@@ -10,6 +10,7 @@ import { FormaPagoService, FormaPago } from '../../services/forma-pago.service';
   templateUrl: './forma-pago.component.html',
   styleUrl: './forma-pago.component.css'
 })
+
 export class FormaPagoComponent implements OnInit {
   formaPagoForm: FormGroup;
   tiposPago = ['EFECTIVO', 'TARJETA'];
