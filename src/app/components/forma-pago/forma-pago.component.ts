@@ -77,29 +77,21 @@ export class FormaPagoComponent implements OnInit {
 
   onSubmit() {
     if (this.formaPagoForm.valid) {
-      const formValue = this.formaPagoForm.value;
-      if (formValue.diaCierre) {
-        formValue.diaCierre = parseInt(formValue.diaCierre);
-      }
-      if (formValue.diaVencimiento) {
-        formValue.diaVencimiento = parseInt(formValue.diaVencimiento);
-      }
+      console.log('Datos a enviar:', this.formaPagoForm.value); // Para ver qué datos estamos enviando
 
-      const operacion = this.editandoId
-        ? this.formaPagoService.actualizarFormaPago(this.editandoId, formValue)
-        : this.formaPagoService.crearFormaPago(formValue);
-
-      operacion.subscribe({
+      this.formaPagoService.crearFormaPago(this.formaPagoForm.value).subscribe({
         next: (response) => {
-          console.log(this.editandoId ? 'Forma de pago actualizada:' : 'Forma de pago creada:', response);
-          this.formaPagoForm.reset({activo: true});
-          this.editandoId = null;
-          alert(this.editandoId ? 'Forma de pago actualizada exitosamente' : 'Forma de pago creada exitosamente');
-          this.cargarFormasPago();
+          console.log('Forma de pago creada:', response);
+          this.formaPagoForm.reset();
+          alert('Forma de pago creada exitosamente');
         },
         error: (error) => {
-          console.error('Error:', error);
-          alert('Error al procesar la forma de pago');
+          console.error('Error completo:', error);
+          console.error('Mensaje del servidor:', error.error);
+          console.error('Estado:', error.status);
+          console.error('Detalles:', error.error?.message || error.message);
+          
+          alert(`Error al crear forma de pago: ${error.error?.message || 'Error en el servidor'}`);
         }
       });
     }
