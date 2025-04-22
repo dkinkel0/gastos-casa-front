@@ -34,6 +34,17 @@
       </div>
 
       <div class="form-group">
+        <label for="mes">Mes *</label>
+        <select class="form-control" id="mes" formControlName="mes">
+          <option value="">Seleccione mes</option>
+          <option *ngFor="let mes of meses" [value]="mes">{{mes}}</option>
+        </select>
+        <div class="error-message" *ngIf="formaPagoForm.get('mes')?.errors?.['required'] && formaPagoForm.get('mes')?.touched">
+          El mes es requerido
+        </div>
+      </div>
+
+      <div class="form-group">
         <label for="diaCierre">Día de Cierre</label>
         <input type="number" class="form-control" id="diaCierre" formControlName="diaCierre" min="1" max="31">
       </div>
@@ -54,6 +65,13 @@
     </button>
   </form>
 
+  <div class="back-button-container">
+    <button type="button" class="back-button" (click)="volverAlInicio()">
+      <span class="icon">🏠</span>
+      <span>Volver al Inicio</span>
+    </button>
+  </div>
+
   <h3 class="mt-4">Formas de Pago Disponibles</h3>
   
   <div class="table-responsive">
@@ -63,6 +81,7 @@
           <th>Tipo</th>
           <th>Banco</th>
           <th>Marca</th>
+          <th>Mes</th>
           <th>Día Cierre</th>
           <th>Día Vencimiento</th>
           <th>Estado</th>
@@ -74,6 +93,7 @@
           <td>{{forma.tipo}}</td>
           <td>{{forma.banco || '-'}}</td>
           <td>{{forma.marcaTarjeta || '-'}}</td>
+          <td>{{forma.mes || '-'}}</td>
           <td>{{forma.diaCierre || '-'}}</td>
           <td>{{forma.diaVencimiento || '-'}}</td>
           <td>
@@ -88,7 +108,7 @@
           </td>
         </tr>
         <tr *ngIf="formasPago.length === 0">
-          <td colspan="7" class="text-center">No hay formas de pago registradas</td>
+          <td colspan="8" class="text-center">No hay formas de pago registradas</td>
         </tr>
       </tbody>
     </table>

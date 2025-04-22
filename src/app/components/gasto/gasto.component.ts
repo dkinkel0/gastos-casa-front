@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { Router } from '@angular/router';
 import { GastoService } from '../../services/gasto.service';
 import { TipoGastoService } from '../../services/tipo-gasto.service';
 import { FormaPagoService, FormaPago } from '../../services/forma-pago.service';
@@ -19,6 +20,7 @@ export class GastoComponent implements OnInit {
 
   constructor(
     private fb: FormBuilder,
+    private router: Router,
     private gastoService: GastoService,
     private tipoGastoService: TipoGastoService,
     private formaPagoService: FormaPagoService
@@ -136,5 +138,9 @@ export class GastoComponent implements OnInit {
     const formaPagoId = this.gastoForm.get('formaPago')?.value;
     const formaPago = this.formasPago.find(f => f.id === formaPagoId);
     return formaPago?.tipo === 'TARJETA';
+  }
+
+  volverAlInicio() {
+    this.router.navigate(['/']);
   }
 }

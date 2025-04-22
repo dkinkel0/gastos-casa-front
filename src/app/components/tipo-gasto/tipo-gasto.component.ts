@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
 import { TipoGastoService } from '../../services/tipo-gasto.service';
 
 @Component({
@@ -18,7 +19,10 @@ export class TipoGastoComponent implements OnInit {
   };
   editando: boolean = false;
 
-  constructor(private tipoGastoService: TipoGastoService) { }
+  constructor(
+    private router: Router,
+    private tipoGastoService: TipoGastoService
+  ) { }
 
   ngOnInit(): void {
     this.cargarTiposGasto();
@@ -83,5 +87,9 @@ export class TipoGastoComponent implements OnInit {
         console.error('Error al eliminar tipo de gasto:', error);
       }
     });
+  }
+
+  volverAlInicio() {
+    this.router.navigate(['/']);
   }
 }

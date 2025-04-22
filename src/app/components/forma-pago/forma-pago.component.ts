@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { Router } from '@angular/router';
 import { FormaPagoService, FormaPago } from '../../services/forma-pago.service';
 
 @Component({
@@ -15,11 +16,16 @@ export class FormaPagoComponent implements OnInit {
   formaPagoForm: FormGroup;
   tiposPago = ['EFECTIVO', 'TARJETA'];
   marcasTarjeta = ['VISA', 'MASTERCARD'];
+  meses = [
+    'ENERO', 'FEBRERO', 'MARZO', 'ABRIL', 'MAYO', 'JUNIO',
+    'JULIO', 'AGOSTO', 'SEPTIEMBRE', 'OCTUBRE', 'NOVIEMBRE', 'DICIEMBRE'
+  ];
   formasPago: FormaPago[] = [];
   editandoId: number | null = null;
 
   constructor(
     private fb: FormBuilder,
+    private router: Router,
     private formaPagoService: FormaPagoService
   ) {
     this.formaPagoForm = this.fb.group({
@@ -28,6 +34,7 @@ export class FormaPagoComponent implements OnInit {
       marcaTarjeta: [''],
       diaCierre: [null],
       diaVencimiento: [null],
+      mes: [''],
       activo: [true]
     });
 
@@ -36,20 +43,23 @@ export class FormaPagoComponent implements OnInit {
       if (tipo === 'TARJETA') {
         this.formaPagoForm.get('banco')?.setValidators(Validators.required);
         this.formaPagoForm.get('marcaTarjeta')?.setValidators(Validators.required);
-        // Limpiar los campos de tarjeta cuando se cambia a EFECTIVO
+        this.formaPagoForm.get('mes')?.setValidators(Validators.required);
       } else {
         this.formaPagoForm.get('banco')?.clearValidators();
         this.formaPagoForm.get('marcaTarjeta')?.clearValidators();
+        this.formaPagoForm.get('mes')?.clearValidators();
         // Limpiar los campos relacionados con tarjeta
         this.formaPagoForm.patchValue({
           banco: '',
           marcaTarjeta: '',
           diaCierre: null,
-          diaVencimiento: null
+          diaVencimiento: null,
+          mes: ''
         });
       }
       this.formaPagoForm.get('banco')?.updateValueAndValidity();
       this.formaPagoForm.get('marcaTarjeta')?.updateValueAndValidity();
+      this.formaPagoForm.get('mes')?.updateValueAndValidity();
     });
   }
 
@@ -112,5 +122,9 @@ export class FormaPagoComponent implements OnInit {
           }
         });
     }
+  }
+
+  volverAlInicio() {
+    this.router.navigate(['/']);
   }
 }

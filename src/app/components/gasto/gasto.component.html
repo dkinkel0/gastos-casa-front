@@ -29,7 +29,7 @@
         class="form-control">
         <option value="">Seleccione un tipo</option>
         <option *ngFor="let tipo of tiposGasto" [value]="tipo.id">
-          {{tipo.descripcion}}
+          {{tipo.nombre}}
         </option>
       </select>
     </div>
@@ -81,11 +81,19 @@
         placeholder="Número de cuotas">
     </div>
 
-    <button 
-      type="submit" 
-      class="btn btn-primary"
-      [disabled]="!gastoForm.valid">
-      Guardar Gasto
-    </button>
+    <div class="button-group">
+      <button 
+        type="submit" 
+        class="btn btn-primary"
+        [disabled]="!gastoForm.valid">
+        Guardar Gasto
+      </button>
+      <button 
+        type="button" 
+        class="btn btn-secondary"
+        (click)="volverAlInicio()">
+        Volver al Inicio
+      </button>
+    </div>
   </form>
 </div>

@@ -11,6 +11,7 @@ export interface FormaPago {
   marcaTarjeta?: string;
   diaCierre?: number;
   diaVencimiento?: number;
+  mes?: string;
   activo: boolean;
 }
 
