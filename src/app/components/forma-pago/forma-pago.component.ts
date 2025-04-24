@@ -72,7 +72,7 @@ export class FormaPagoComponent implements OnInit {
       .subscribe({
         next: (formas) => {
           this.formasPago = formas;
-          console.log('Formas de pago cargadas:', formas);
+         // console.log('Formas de pago cargadas:', formas);
         },
         error: (error) => {
           console.error('Error al cargar formas de pago:', error);

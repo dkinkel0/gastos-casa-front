@@ -10,7 +10,7 @@ interface Cotizacion {
   precioCompra: number;
   precioVenta: number;
   precioIntermedio: number;
-}
+ }
 
 @Component({
   selector: 'app-cotizacion-dolar',
@@ -22,7 +22,7 @@ interface Cotizacion {
 
 export class CotizacionDolarComponent implements OnInit {
   cotizacionForm: FormGroup;
-  precioIntermedio: number = 0;
+  
   cotizaciones: Cotizacion[] = [];
 
   constructor(
@@ -35,24 +35,12 @@ export class CotizacionDolarComponent implements OnInit {
       precioCompra: ['', [Validators.required, Validators.min(0)]],
       precioVenta: ['', [Validators.required, Validators.min(0)]]
     });
-
-    // Calcular precio intermedio cuando cambien los valores
-    this.cotizacionForm.valueChanges.subscribe(() => {
-      this.calcularPrecioIntermedio();
-    });
+    
   }
 
   ngOnInit() {
     this.cargarCotizaciones();
-  }
-
-  calcularPrecioIntermedio() {
-    const compra = this.cotizacionForm.get('precioCompra')?.value;
-    const venta = this.cotizacionForm.get('precioVenta')?.value;
-    
-    if (compra && venta) {
-      this.precioIntermedio = (Number(compra) + Number(venta)) / 2;
-    }
+    // getCotizaciones
   }
 
   onSubmit() {

@@ -11,7 +11,7 @@ export class CotizacionService {
 
   constructor(private http: HttpClient) { }
 
-  // Obtener todas las cotizaciones
+  // Obtener todas las cotizaciones (ya vienen ordenadas del backend)
   getCotizaciones(): Observable<any[]> {
     return this.http.get<any[]>(this.apiUrl);
   }
