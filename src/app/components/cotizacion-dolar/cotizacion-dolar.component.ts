@@ -6,11 +6,11 @@ import { CotizacionService } from '../../services/cotizacion.service';
 
 interface Cotizacion {
   id: number;
-  fecha: Date;
+  fecha: string;
   precioCompra: number;
   precioVenta: number;
   precioIntermedio: number;
- }
+}
 
 @Component({
   selector: 'app-cotizacion-dolar',
@@ -45,7 +45,7 @@ export class CotizacionDolarComponent implements OnInit {
 
   onSubmit() {
     if (this.cotizacionForm.valid) {
-      this.cotizacionService.saveCotizacion(this.cotizacionForm.value).subscribe({
+      this.cotizacionService.createCotizacion(this.cotizacionForm.value).subscribe({
         next: () => {
           this.cotizacionForm.reset({fecha: new Date()});
           this.cargarCotizaciones();
@@ -56,7 +56,7 @@ export class CotizacionDolarComponent implements OnInit {
   }
 
   cargarCotizaciones() {
-    this.cotizacionService.getCotizaciones().subscribe({
+    this.cotizacionService.getAllCotizaciones().subscribe({
       next: (data: Cotizacion[]) => this.cotizaciones = data,
       error: (error: Error) => console.error('Error cargando cotizaciones:', error)
     });

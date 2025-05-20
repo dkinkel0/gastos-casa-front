@@ -2,9 +2,10 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { GastoService } from '../../services/gasto.service';
+import { GastoService, Gasto } from '../../services/gasto.service';
 import { TipoGastoService } from '../../services/tipo-gasto.service';
 import { FormaPagoService, FormaPago } from '../../services/forma-pago.service';
+import { CotizacionService } from '../../services/cotizacion.service';
 
 @Component({
   selector: 'app-gasto',
@@ -13,6 +14,7 @@ import { FormaPagoService, FormaPago } from '../../services/forma-pago.service';
   templateUrl: './gasto.component.html',
   styleUrl: './gasto.component.css'
 })
+
 export class GastoComponent implements OnInit {
   gastoForm: FormGroup;
   tiposGasto: any[] = [];
@@ -23,14 +25,15 @@ export class GastoComponent implements OnInit {
     private router: Router,
     private gastoService: GastoService,
     private tipoGastoService: TipoGastoService,
-    private formaPagoService: FormaPagoService
+    private formaPagoService: FormaPagoService,
+    private cotizacionService: CotizacionService
   ) {
     this.gastoForm = this.fb.group({
       fecha: ['', Validators.required],
       detalle: ['', Validators.required],
       tipo: ['', Validators.required],
       costo: ['', [Validators.required, Validators.min(0)]],
-      costoDolar: [''],
+      costoDolar: ['', [Validators.required, Validators.min(0)]],
       formaPago: ['', Validators.required],
       cuotas: ['']
     });
@@ -51,18 +54,18 @@ export class GastoComponent implements OnInit {
 
   cargarTiposGasto() {
     this.tipoGastoService.getTiposGasto().subscribe({
-        next: (tipos) => {
-            // Ordenar alfabéticamente por nombre
-            this.tiposGasto = tipos.sort((a, b) => 
-                a.nombre.localeCompare(b.nombre)
-            );
-        },
-        error: (error) => {
-            console.error('Error al cargar tipos de gasto:', error);
-            alert('Error al cargar tipos de gasto');
-        }
+      next: (tipos) => {
+        // Ordenar alfabéticamente por nombre
+        this.tiposGasto = tipos.sort((a, b) => 
+          a.nombre.localeCompare(b.nombre)
+        );
+      },
+      error: (error) => {
+        console.error('Error al cargar tipos de gasto:', error);
+        alert('Error al cargar tipos de gasto');
+      }
     });
-}
+  }
 
   cargarFormasPago() {
     console.log('Cargando formas de pago...');
@@ -83,7 +86,7 @@ export class GastoComponent implements OnInit {
     const costo = this.gastoForm.get('costo')?.value;
     
     if (fecha && costo) {
-      this.gastoService.getCotizacionDolar(fecha).subscribe({
+      this.cotizacionService.getCotizacionByFecha(fecha).subscribe({
         next: (cotizacion) => {
           const costoDolar = costo / cotizacion.precioIntermedio;
           this.gastoForm.patchValue({
@@ -102,39 +105,31 @@ export class GastoComponent implements OnInit {
 
   onSubmit() {
     if (this.gastoForm.valid) {
-        const gastoData = {
-            fecha: this.gastoForm.get('fecha')?.value,
-            detalle: this.gastoForm.get('detalle')?.value,
-            tipo: Number(this.gastoForm.get('tipo')?.value),
-            costo: Number(this.gastoForm.get('costo')?.value),
-            costoDolar: Number(this.gastoForm.get('costoDolar')?.value),
-            formaPago: Number(this.gastoForm.get('formaPago')?.value),
-            cuotas: this.gastoForm.get('cuotas')?.value ? Number(this.gastoForm.get('cuotas')?.value) : undefined
-        };
-
-        console.log('Datos estructurados a enviar:', gastoData);
-
-        // Validar que la fecha no sea futura
-        const fechaGasto = new Date(gastoData.fecha);
-        if (fechaGasto > new Date()) {
-            alert('La fecha no puede ser futura');
-            return;
+      // Convertir los valores numéricos correctamente
+      const gastoData: Gasto = {
+        ...this.gastoForm.value,
+        tipo: Number(this.gastoForm.value.tipo),
+        costo: Number(this.gastoForm.value.costo),
+        costoDolar: Number(this.gastoForm.value.costoDolar)
+      };
+      
+      console.log('Datos estructurados a enviar:', gastoData);
+      
+      this.gastoService.crearGasto(gastoData).subscribe({
+        next: (response) => {
+          console.log('Gasto guardado exitosamente', response);
+          this.gastoForm.reset();
+          // Aquí podrías agregar un mensaje de éxito o redireccionar
+        },
+        error: (error) => {
+          console.error('Error al guardar el gasto', error);
+          console.log('Error completo:', error);
+          console.log('Datos del error:', error.error);
+          // Aquí podrías mostrar un mensaje de error al usuario
         }
-
-        this.gastoService.crearGasto(gastoData).subscribe({
-            next: (response) => {
-                console.log('Gasto guardado exitosamente', response);
-                this.gastoForm.reset();
-                alert('Gasto guardado exitosamente');
-            },
-            error: (error) => {
-                console.error('Error completo:', error);
-                console.error('Datos del error:', error.error);
-                alert(`Error al guardar el gasto: ${error.error?.message || 'Error en el servidor'}`);
-            }
-        });
+      });
     }
-}
+  }
 
   mostrarCampoCuotas(): boolean {
     const formaPagoId = this.gastoForm.get('formaPago')?.value;
