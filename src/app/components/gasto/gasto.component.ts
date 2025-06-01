@@ -1,11 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
 import { Router } from '@angular/router';
 import { GastoService, Gasto } from '../../services/gasto.service';
 import { TipoGastoService } from '../../services/tipo-gasto.service';
 import { FormaPagoService, FormaPago } from '../../services/forma-pago.service';
-import { CotizacionService } from '../../services/cotizacion.service';
+import { CotizacionService, Cotizacion } from '../../services/cotizacion.service';
 
 @Component({
   selector: 'app-gasto',
@@ -19,6 +19,7 @@ export class GastoComponent implements OnInit {
   gastoForm: FormGroup;
   tiposGasto: any[] = [];
   formasPago: FormaPago[] = [];
+  cotizaciones: { [fecha: string]: number } = {}; // Almacenará las cotizaciones por fecha
 
   constructor(
     private fb: FormBuilder,
@@ -29,7 +30,7 @@ export class GastoComponent implements OnInit {
     private cotizacionService: CotizacionService
   ) {
     this.gastoForm = this.fb.group({
-      fecha: ['', Validators.required],
+      fecha: ['', [Validators.required, this.validarFormatoFecha()]],
       detalle: ['', Validators.required],
       tipo: ['', Validators.required],
       costo: ['', [Validators.required, Validators.min(0)]],
@@ -45,11 +46,23 @@ export class GastoComponent implements OnInit {
     this.gastoForm.get('costo')?.valueChanges.subscribe(() => {
       this.calcularCostoDolar();
     });
+
+    // Escuchar cambios en forma de pago para manejar el campo de cuotas
+    this.gastoForm.get('formaPago')?.valueChanges.subscribe((formaPagoId) => {
+      if (this.mostrarCampoCuotas()) {
+        this.gastoForm.get('cuotas')?.setValidators([Validators.required, Validators.min(1), Validators.max(24)]);
+      } else {
+        this.gastoForm.get('cuotas')?.clearValidators();
+        this.gastoForm.get('cuotas')?.setValue('');
+      }
+      this.gastoForm.get('cuotas')?.updateValueAndValidity();
+    });
   }
 
   ngOnInit() {
     this.cargarTiposGasto();
     this.cargarFormasPago();
+    this.cargarCotizaciones();
   }
 
   cargarTiposGasto() {
@@ -81,25 +94,43 @@ export class GastoComponent implements OnInit {
     });
   }
 
+  cargarCotizaciones() {
+    this.cotizacionService.getAllCotizaciones().subscribe({
+      next: (cotizaciones: Cotizacion[]) => {
+        // Convertir el array de cotizaciones a un objeto indexado por fecha
+        this.cotizaciones = cotizaciones.reduce((acc: { [fecha: string]: number }, cotizacion: Cotizacion) => {
+          acc[cotizacion.fecha] = cotizacion.precioIntermedio;
+          return acc;
+        }, {});
+        
+        console.log('Cotizaciones cargadas:', this.cotizaciones);
+      },
+      error: (error: Error) => {
+        console.error('Error al cargar cotizaciones:', error);
+        alert('Error al cargar las cotizaciones del dólar');
+      }
+    });
+  }
+
   calcularCostoDolar() {
     const fecha = this.gastoForm.get('fecha')?.value;
     const costo = this.gastoForm.get('costo')?.value;
     
     if (fecha && costo) {
-      this.cotizacionService.getCotizacionByFecha(fecha).subscribe({
-        next: (cotizacion) => {
-          const costoDolar = costo / cotizacion.precioIntermedio;
-          this.gastoForm.patchValue({
-            costoDolar: costoDolar.toFixed(2)
-          }, { emitEvent: false });
-        },
-        error: (error) => {
-          console.error('Error al obtener cotización del dólar:', error);
-          this.gastoForm.patchValue({
-            costoDolar: ''
-          }, { emitEvent: false });
-        }
-      });
+      // Usar la cotización precargada
+      const cotizacion = this.cotizaciones[fecha];
+      
+      if (cotizacion) {
+        const costoDolar = costo / cotizacion;
+        this.gastoForm.patchValue({
+          costoDolar: costoDolar.toFixed(2)
+        }, { emitEvent: false });
+      } else {
+        console.warn('No se encontró cotización para la fecha:', fecha);
+        this.gastoForm.patchValue({
+          costoDolar: ''
+        }, { emitEvent: false });
+      }
     }
   }
 
@@ -110,7 +141,8 @@ export class GastoComponent implements OnInit {
         ...this.gastoForm.value,
         tipo: Number(this.gastoForm.value.tipo),
         costo: Number(this.gastoForm.value.costo),
-        costoDolar: Number(this.gastoForm.value.costoDolar)
+        costoDolar: Number(this.gastoForm.value.costoDolar),
+        cuotas: this.mostrarCampoCuotas() ? Number(this.gastoForm.value.cuotas) : null
       };
       
       console.log('Datos estructurados a enviar:', gastoData);
@@ -133,11 +165,29 @@ export class GastoComponent implements OnInit {
 
   mostrarCampoCuotas(): boolean {
     const formaPagoId = this.gastoForm.get('formaPago')?.value;
-    const formaPago = this.formasPago.find(f => f.id === formaPagoId);
-    return formaPago?.tipo === 'TARJETA';
+    const formaPago = this.formasPago.find(f => f.id == formaPagoId); // Usar == para comparar string/number
+    console.log('Forma de pago seleccionada:', formaPago);
+    // Ajusta aquí si el campo correcto es 'tipo' o 'nombre'
+    return formaPago?.tipo === 'TARJETA' || formaPago?.nombre?.toUpperCase() === 'TARJETA';
   }
 
   volverAlInicio() {
     this.router.navigate(['/']);
+  }
+
+  // Agregar el validador personalizado
+  validarFormatoFecha(): (control: AbstractControl) => ValidationErrors | null {
+    return (control: AbstractControl): ValidationErrors | null => {
+      if (!control.value) return null;
+      
+      const fecha = new Date(control.value);
+      const año = fecha.getFullYear();
+      
+      if (año.toString().length !== 4) {
+        return { añoInvalido: true };
+      }
+      
+      return null;
+    };
   }
 }

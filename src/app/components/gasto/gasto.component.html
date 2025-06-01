@@ -9,6 +9,9 @@
         id="fecha" 
         formControlName="fecha" 
         class="form-control">
+      <div *ngIf="gastoForm.get('fecha')?.errors?.['añoInvalido']" class="error-message">
+        El año debe tener 4 dígitos
+      </div>
     </div>
 
     <div class="form-group">
@@ -77,8 +80,18 @@
         formControlName="cuotas" 
         class="form-control"
         min="1"
+        max="24"
         step="1"
         placeholder="Número de cuotas">
+      <div *ngIf="gastoForm.get('cuotas')?.errors?.['required'] && gastoForm.get('cuotas')?.touched" class="error-message">
+        El número de cuotas es requerido
+      </div>
+      <div *ngIf="gastoForm.get('cuotas')?.errors?.['min'] && gastoForm.get('cuotas')?.touched" class="error-message">
+        El mínimo de cuotas es 1
+      </div>
+      <div *ngIf="gastoForm.get('cuotas')?.errors?.['max'] && gastoForm.get('cuotas')?.touched" class="error-message">
+        El máximo de cuotas es 24
+      </div>
     </div>
 
     <div class="button-group">
