@@ -17,6 +17,19 @@
             formControlName="fecha"
             class="form-control">
         </div>
+        <div *ngIf="cotizacionForm.get('fecha')?.hasError('yearFourDigits') && cotizacionForm.get('fecha')?.touched" class="error-message">
+          El año debe tener 4 dígitos.
+        </div>
+        
+        <div class="form-group">
+          <label for="precioVenta">Precio Venta:</label>
+          <input 
+            type="number" 
+            id="precioVenta" 
+            formControlName="precioVenta"
+            class="form-control"
+            step="0.01">
+        </div>
 
         <div class="form-group">
           <label for="precioCompra">Precio Compra:</label>
@@ -28,15 +41,7 @@
             step="0.01">
         </div>
 
-        <div class="form-group">
-          <label for="precioVenta">Precio Venta:</label>
-          <input 
-            type="number" 
-            id="precioVenta" 
-            formControlName="precioVenta"
-            class="form-control"
-            step="0.01">
-        </div>
+        
 
         
         <button 
@@ -46,6 +51,31 @@
           Guardar Cotización
         </button>
       </form>
+
+      <!-- Formulario de Autocompletado -->
+      <div class="autocomplete-section">
+        <h3>Autocompletar Cotizaciones</h3>
+        <form [formGroup]="autocompleteForm" (ngSubmit)="autocompletarCotizaciones()" class="form-container">
+          <div class="form-group">
+            <label for="fechaHasta">Autocompletar hasta:</label>
+            <input 
+              type="date" 
+              id="fechaHasta" 
+              formControlName="fechaHasta"
+              class="form-control">
+          </div>
+          <div *ngIf="autocompleteForm.get('fechaHasta')?.hasError('yearFourDigits') && autocompleteForm.get('fechaHasta')?.touched" class="error-message">
+            El año debe tener 4 dígitos.
+          </div>
+          
+          <button 
+            type="submit" 
+            class="btn-submit"
+            [disabled]="!autocompleteForm.valid">
+            Autocompletar Cotizaciones
+          </button>
+        </form>
+      </div>
     </div>
 
     <!-- Lista -->

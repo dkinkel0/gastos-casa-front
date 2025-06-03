@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
 export interface Cotizacion {
-  id: number;
+  id?: number;
   fecha: string;
   precioCompra: number;
   precioVenta: number;
@@ -28,6 +28,10 @@ export class CotizacionService {
 
   createCotizacion(cotizacion: Cotizacion): Observable<Cotizacion> {
     return this.http.post<Cotizacion>(this.apiUrl, cotizacion);
+  }
+
+  createCotizaciones(cotizaciones: Cotizacion[]): Observable<Cotizacion[]> {
+    return this.http.post<Cotizacion[]>(`${this.apiUrl}/bulk`, cotizaciones);
   }
 
   deleteCotizacion(id: number): Observable<void> {
