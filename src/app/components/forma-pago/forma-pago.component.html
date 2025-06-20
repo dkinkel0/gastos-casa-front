@@ -34,24 +34,27 @@
       </div>
 
       <div class="form-group">
-        <label for="mes">Mes *</label>
-        <select class="form-control" id="mes" formControlName="mes">
-          <option value="">Seleccione mes</option>
-          <option *ngFor="let mes of meses" [value]="mes">{{mes}}</option>
-        </select>
-        <div class="error-message" *ngIf="formaPagoForm.get('mes')?.errors?.['required'] && formaPagoForm.get('mes')?.touched">
-          El mes es requerido
+        <label for="titular">Titular *</label>
+        <input type="text" class="form-control" id="titular" formControlName="titular" placeholder="Ingrese el nombre del titular">
+        <div class="error-message" *ngIf="formaPagoForm.get('titular')?.errors?.['required'] && formaPagoForm.get('titular')?.touched">
+          El titular es requerido
         </div>
       </div>
 
       <div class="form-group">
-        <label for="diaCierre">Día de Cierre</label>
-        <input type="number" class="form-control" id="diaCierre" formControlName="diaCierre" min="1" max="31">
+        <label for="fechaCierre">Fecha de Cierre *</label>
+        <input type="date" class="form-control" id="fechaCierre" formControlName="fechaCierre">
+        <div class="error-message" *ngIf="formaPagoForm.get('fechaCierre')?.errors?.['required'] && formaPagoForm.get('fechaCierre')?.touched">
+          La fecha de cierre es requerida
+        </div>
       </div>
 
       <div class="form-group">
-        <label for="diaVencimiento">Día de Vencimiento</label>
-        <input type="number" class="form-control" id="diaVencimiento" formControlName="diaVencimiento" min="1" max="31">
+        <label for="fechaVencimiento">Fecha de Vencimiento *</label>
+        <input type="date" class="form-control" id="fechaVencimiento" formControlName="fechaVencimiento">
+        <div class="error-message" *ngIf="formaPagoForm.get('fechaVencimiento')?.errors?.['required'] && formaPagoForm.get('fechaVencimiento')?.touched">
+          La fecha de vencimiento es requerida
+        </div>
       </div>
     </ng-container>
 
@@ -81,9 +84,9 @@
           <th>Tipo</th>
           <th>Banco</th>
           <th>Marca</th>
-          <th>Mes</th>
-          <th>Día Cierre</th>
-          <th>Día Vencimiento</th>
+          <th>Titular</th>
+          <th>Fecha Cierre</th>
+          <th>Fecha Vencimiento</th>
           <th>Estado</th>
           <th>Acciones</th>
         </tr>
@@ -93,9 +96,9 @@
           <td>{{forma.tipo}}</td>
           <td>{{forma.banco || '-'}}</td>
           <td>{{forma.marcaTarjeta || '-'}}</td>
-          <td>{{forma.mes || '-'}}</td>
-          <td>{{forma.diaCierre || '-'}}</td>
-          <td>{{forma.diaVencimiento || '-'}}</td>
+          <td>{{forma.titular || '-'}}</td>
+          <td>{{forma.fechaCierre || '-'}}</td>
+          <td>{{forma.fechaVencimiento || '-'}}</td>
           <td>
             <span [class]="forma.activo ? 'badge bg-success' : 'badge bg-danger'">
               {{forma.activo ? 'Activo' : 'Inactivo'}}
@@ -108,7 +111,7 @@
           </td>
         </tr>
         <tr *ngIf="formasPago.length === 0">
-          <td colspan="8" class="text-center">No hay formas de pago registradas</td>
+          <td colspan="9" class="text-center">No hay formas de pago registradas</td>
         </tr>
       </tbody>
     </table>

@@ -16,10 +16,6 @@ export class FormaPagoComponent implements OnInit {
   formaPagoForm: FormGroup;
   tiposPago = ['EFECTIVO', 'TARJETA'];
   marcasTarjeta = ['VISA', 'MASTERCARD'];
-  meses = [
-    'ENERO', 'FEBRERO', 'MARZO', 'ABRIL', 'MAYO', 'JUNIO',
-    'JULIO', 'AGOSTO', 'SEPTIEMBRE', 'OCTUBRE', 'NOVIEMBRE', 'DICIEMBRE'
-  ];
   formasPago: FormaPago[] = [];
   editandoId: number | null = null;
 
@@ -32,9 +28,9 @@ export class FormaPagoComponent implements OnInit {
       tipo: ['', Validators.required],
       banco: [''],
       marcaTarjeta: [''],
-      diaCierre: [null],
-      diaVencimiento: [null],
-      mes: [''],
+      titular: [''],
+      fechaCierre: [null],
+      fechaVencimiento: [null],
       activo: [true]
     });
 
@@ -43,23 +39,29 @@ export class FormaPagoComponent implements OnInit {
       if (tipo === 'TARJETA') {
         this.formaPagoForm.get('banco')?.setValidators(Validators.required);
         this.formaPagoForm.get('marcaTarjeta')?.setValidators(Validators.required);
-        this.formaPagoForm.get('mes')?.setValidators(Validators.required);
+        this.formaPagoForm.get('titular')?.setValidators(Validators.required);
+        this.formaPagoForm.get('fechaCierre')?.setValidators(Validators.required);
+        this.formaPagoForm.get('fechaVencimiento')?.setValidators(Validators.required);
       } else {
         this.formaPagoForm.get('banco')?.clearValidators();
         this.formaPagoForm.get('marcaTarjeta')?.clearValidators();
-        this.formaPagoForm.get('mes')?.clearValidators();
+        this.formaPagoForm.get('titular')?.clearValidators();
+        this.formaPagoForm.get('fechaCierre')?.clearValidators();
+        this.formaPagoForm.get('fechaVencimiento')?.clearValidators();
         // Limpiar los campos relacionados con tarjeta
         this.formaPagoForm.patchValue({
           banco: '',
           marcaTarjeta: '',
-          diaCierre: null,
-          diaVencimiento: null,
-          mes: ''
+          titular: '',
+          fechaCierre: null,
+          fechaVencimiento: null
         });
       }
       this.formaPagoForm.get('banco')?.updateValueAndValidity();
       this.formaPagoForm.get('marcaTarjeta')?.updateValueAndValidity();
-      this.formaPagoForm.get('mes')?.updateValueAndValidity();
+      this.formaPagoForm.get('titular')?.updateValueAndValidity();
+      this.formaPagoForm.get('fechaCierre')?.updateValueAndValidity();
+      this.formaPagoForm.get('fechaVencimiento')?.updateValueAndValidity();
     });
   }
 

@@ -67,7 +67,7 @@
         class="form-control">
         <option value="">Seleccione forma de pago</option>
         <option *ngFor="let forma of formasPago" [value]="forma.id">
-          {{forma.nombre || forma.tipo}}
+          {{formatearFormaPago(forma)}}
         </option>
       </select>
     </div>

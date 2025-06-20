@@ -85,7 +85,8 @@ export class GastoComponent implements OnInit {
     this.formaPagoService.getFormasPago().subscribe({
       next: (formas) => {
         console.log('Formas de pago recibidas:', formas);
-        this.formasPago = formas;
+        // Filtrar solo las formas de pago activas
+        this.formasPago = formas.filter(forma => forma.activo);
       },
       error: (error) => {
         console.error('Error al cargar formas de pago:', error);
@@ -189,5 +190,34 @@ export class GastoComponent implements OnInit {
       
       return null;
     };
+  }
+
+  formatearFormaPago(forma: FormaPago): string {
+    if (forma.tipo === 'EFECTIVO') {
+      return 'EFECTIVO';
+    }
+    
+    if (forma.tipo === 'TARJETA') {
+      // Formatear fecha de cierre
+      let fechaCierreTexto = '';
+      if (forma.fechaCierre) {
+        const fecha = new Date(forma.fechaCierre);
+        const dia = fecha.getDate();
+        const mes = fecha.toLocaleDateString('es-ES', { month: 'long' });
+        fechaCierreTexto = `${dia}-${mes.charAt(0).toUpperCase() + mes.slice(1)}`;
+      }
+      
+      // Construir el texto según el formato especificado
+      const partes = [
+        fechaCierreTexto,
+        forma.banco,
+        forma.marcaTarjeta,
+        forma.titular
+      ].filter(parte => parte && parte.trim() !== '');
+      
+      return partes.join('-');
+    }
+    
+    return forma.nombre || forma.tipo;
   }
 }

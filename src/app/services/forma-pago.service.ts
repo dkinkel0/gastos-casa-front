@@ -9,8 +9,9 @@ export interface FormaPago {
   tipo: string;  // "EFECTIVO" o "TARJETA"
   banco?: string;
   marcaTarjeta?: string;
-  diaCierre?: number;
-  diaVencimiento?: number;
+  titular?: string;
+  fechaCierre?: string;
+  fechaVencimiento?: string;
   mes?: string;
   activo: boolean;
 }
