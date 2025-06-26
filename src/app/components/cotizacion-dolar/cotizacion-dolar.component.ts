@@ -35,6 +35,8 @@ export class CotizacionDolarComponent implements OnInit {
   cotizacionForm: FormGroup;
   autocompleteForm: FormGroup;
   cotizaciones: Cotizacion[] = [];
+  editandoCotizacion: Cotizacion | null = null; // Cotización que se está editando
+  modoEdicion = false; // Indica si estamos en modo edición
   // Fecha inicial fija: 1 de septiembre de 2023
   private readonly FECHA_INICIAL = new Date(2023, 8, 1); // Mes 8 = Septiembre (0-based)
 
@@ -61,13 +63,43 @@ export class CotizacionDolarComponent implements OnInit {
 
   onSubmit() {
     if (this.cotizacionForm.valid) {
-      this.cotizacionService.createCotizacion(this.cotizacionForm.value).subscribe({
-        next: () => {
-          this.cotizacionForm.reset({fecha: new Date()});
-          this.cargarCotizaciones();
-        },
-        error: (error: Error) => console.error('Error al guardar:', error)
-      });
+      if (this.modoEdicion && this.editandoCotizacion?.id) {
+        // Modo edición - actualizar cotización existente
+        this.cotizacionService.updateCotizacion(this.editandoCotizacion.id, this.cotizacionForm.value).subscribe({
+          next: () => {
+            this.cotizacionForm.reset({fecha: new Date()});
+            this.editandoCotizacion = null;
+            this.modoEdicion = false;
+            this.cargarCotizaciones();
+            if (typeof window !== 'undefined') {
+              alert('Cotización actualizada exitosamente');
+            }
+          },
+          error: (error: Error) => {
+            console.error('Error al actualizar:', error);
+            if (typeof window !== 'undefined') {
+              alert('Error al actualizar la cotización');
+            }
+          }
+        });
+      } else {
+        // Modo creación - crear nueva cotización
+        this.cotizacionService.createCotizacion(this.cotizacionForm.value).subscribe({
+          next: () => {
+            this.cotizacionForm.reset({fecha: new Date()});
+            this.cargarCotizaciones();
+            if (typeof window !== 'undefined') {
+              alert('Cotización guardada exitosamente');
+            }
+          },
+          error: (error: Error) => {
+            console.error('Error al guardar:', error);
+            if (typeof window !== 'undefined') {
+              alert('Error al guardar la cotización');
+            }
+          }
+        });
+      }
     }
   }
 
@@ -182,19 +214,27 @@ export class CotizacionDolarComponent implements OnInit {
           .then((exitosas) => {
             this.cargarCotizaciones();
             if (exitosas.length === cotizacionesAAgregar.length) {
-              alert(`Se autocompletaron exitosamente ${exitosas.length} cotizaciones`);
+              if (typeof window !== 'undefined') {
+                alert(`Se autocompletaron exitosamente ${exitosas.length} cotizaciones`);
+              }
             } else {
-              alert(`Se autocompletaron ${exitosas.length} de ${cotizacionesAAgregar.length} cotizaciones. Revisa la consola para más detalles.`);
+              if (typeof window !== 'undefined') {
+                alert(`Se autocompletaron ${exitosas.length} de ${cotizacionesAAgregar.length} cotizaciones. Revisa la consola para más detalles.`);
+              }
             }
           })
           .catch((error) => {
             console.error('Error al autocompletar:', error);
-            alert(`Error al autocompletar las cotizaciones:\n${error.message}\n\nPor favor, intenta nuevamente o contacta al administrador.`);
+            if (typeof window !== 'undefined') {
+              alert(`Error al autocompletar las cotizaciones:\n${error.message}\n\nPor favor, intenta nuevamente o contacta al administrador.`);
+            }
           });
       } else {
         console.log('Fechas disponibles:', fechas.map((f: Date) => this.formatearFecha(f)));
         console.log('Fechas existentes:', Array.from(fechasExistentes));
-        alert('No se encontraron fechas para autocompletar. Verifica que haya fechas entre el 01-09-2023 y la fecha seleccionada.');
+        if (typeof window !== 'undefined') {
+          alert('No se encontraron fechas para autocompletar. Verifica que haya fechas entre el 01-09-2023 y la fecha seleccionada.');
+        }
       }
     }
   }
@@ -220,5 +260,45 @@ export class CotizacionDolarComponent implements OnInit {
 
   private formatearFecha(fecha: Date): string {
     return fecha.toISOString().split('T')[0];
+  }
+
+  editarCotizacion(cotizacion: Cotizacion) {
+    this.editandoCotizacion = cotizacion;
+    this.modoEdicion = true;
+    
+    // Llenar el formulario con los datos de la cotización
+    this.cotizacionForm.patchValue({
+      fecha: cotizacion.fecha,
+      precioCompra: cotizacion.precioCompra,
+      precioVenta: cotizacion.precioVenta
+    });
+  }
+
+  cancelarEdicion() {
+    this.editandoCotizacion = null;
+    this.modoEdicion = false;
+    this.cotizacionForm.reset({fecha: new Date()});
+  }
+
+  eliminarCotizacion(cotizacion: Cotizacion) {
+    if (typeof window !== 'undefined' && confirm(`¿Está seguro que desea eliminar la cotización del ${cotizacion.fecha}?`)) {
+      if (cotizacion.id) {
+        this.cotizacionService.deleteCotizacion(cotizacion.id).subscribe({
+          next: () => {
+            console.log('Cotización eliminada exitosamente');
+            this.cargarCotizaciones(); // Recargar la lista
+            if (typeof window !== 'undefined') {
+              alert('Cotización eliminada exitosamente');
+            }
+          },
+          error: (error) => {
+            console.error('Error al eliminar la cotización:', error);
+            if (typeof window !== 'undefined') {
+              alert('Error al eliminar la cotización');
+            }
+          }
+        });
+      }
+    }
   }
 }

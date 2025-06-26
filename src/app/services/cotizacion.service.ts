@@ -34,6 +34,10 @@ export class CotizacionService {
     return this.http.post<Cotizacion[]>(`${this.apiUrl}/bulk`, cotizaciones);
   }
 
+  updateCotizacion(id: number, cotizacion: Cotizacion): Observable<Cotizacion> {
+    return this.http.put<Cotizacion>(`${this.apiUrl}/${id}`, cotizacion);
+  }
+
   deleteCotizacion(id: number): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/${id}`);
   }

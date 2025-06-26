@@ -92,21 +92,40 @@ export class FormaPagoComponent implements OnInit {
     if (this.formaPagoForm.valid) {
       console.log('Datos a enviar:', this.formaPagoForm.value); // Para ver qué datos estamos enviando
 
-      this.formaPagoService.crearFormaPago(this.formaPagoForm.value).subscribe({
-        next: (response) => {
-          console.log('Forma de pago creada:', response);
-          this.formaPagoForm.reset();
-          alert('Forma de pago creada exitosamente');
-        },
-        error: (error) => {
-          console.error('Error completo:', error);
-          console.error('Mensaje del servidor:', error.error);
-          console.error('Estado:', error.status);
-          console.error('Detalles:', error.error?.message || error.message);
-          
-          alert(`Error al crear forma de pago: ${error.error?.message || 'Error en el servidor'}`);
-        }
-      });
+      if (this.editandoId) {
+        // Actualizar forma de pago existente
+        this.formaPagoService.actualizarFormaPago(this.editandoId, this.formaPagoForm.value).subscribe({
+          next: (response) => {
+            console.log('Forma de pago actualizada:', response);
+            this.formaPagoForm.reset();
+            this.editandoId = null;
+            alert('Forma de pago actualizada exitosamente');
+            this.cargarFormasPago();
+          },
+          error: (error) => {
+            console.error('Error al actualizar forma de pago:', error);
+            alert('Error al actualizar la forma de pago');
+          }
+        });
+      } else {
+        // Crear nueva forma de pago
+        this.formaPagoService.crearFormaPago(this.formaPagoForm.value).subscribe({
+          next: (response) => {
+            console.log('Forma de pago creada:', response);
+            this.formaPagoForm.reset();
+            alert('Forma de pago creada exitosamente');
+            this.cargarFormasPago();
+          },
+          error: (error) => {
+            console.error('Error completo:', error);
+            console.error('Mensaje del servidor:', error.error);
+            console.error('Estado:', error.status);
+            console.error('Detalles:', error.error?.message || error.message);
+            
+            alert(`Error al crear forma de pago: ${error.error?.message || 'Error en el servidor'}`);
+          }
+        });
+      }
     }
   }
 

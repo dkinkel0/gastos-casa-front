@@ -20,6 +20,9 @@ export class GastoComponent implements OnInit {
   tiposGasto: any[] = [];
   formasPago: FormaPago[] = [];
   cotizaciones: { [fecha: string]: number } = {}; // Almacenará las cotizaciones por fecha
+  gastos: Gasto[] = []; // Lista de gastos para mostrar en la tabla
+  editandoGasto: Gasto | null = null; // Gasto que se está editando
+  modoEdicion = false; // Indica si estamos en modo edición
 
   constructor(
     private fb: FormBuilder,
@@ -63,6 +66,7 @@ export class GastoComponent implements OnInit {
     this.cargarTiposGasto();
     this.cargarFormasPago();
     this.cargarCotizaciones();
+    this.cargarUltimosGastos();
   }
 
   cargarTiposGasto() {
@@ -75,7 +79,9 @@ export class GastoComponent implements OnInit {
       },
       error: (error) => {
         console.error('Error al cargar tipos de gasto:', error);
-        alert('Error al cargar tipos de gasto');
+        if (typeof window !== 'undefined') {
+          alert('Error al cargar tipos de gasto');
+        }
       }
     });
   }
@@ -90,7 +96,9 @@ export class GastoComponent implements OnInit {
       },
       error: (error) => {
         console.error('Error al cargar formas de pago:', error);
-        alert('Error al cargar formas de pago');
+        if (typeof window !== 'undefined') {
+          alert('Error al cargar formas de pago');
+        }
       }
     });
   }
@@ -108,7 +116,26 @@ export class GastoComponent implements OnInit {
       },
       error: (error: Error) => {
         console.error('Error al cargar cotizaciones:', error);
-        alert('Error al cargar las cotizaciones del dólar');
+        if (typeof window !== 'undefined') {
+          alert('Error al cargar las cotizaciones del dólar');
+        }
+      }
+    });
+  }
+
+  cargarUltimosGastos() {
+    this.gastoService.getAllGastos().subscribe({
+      next: (gastos) => {
+        // Ordenar por fecha descendente y tomar los últimos 5
+        this.gastos = gastos
+          .sort((a, b) => new Date(b.fecha).getTime() - new Date(a.fecha).getTime())
+          .slice(0, 5);
+      },
+      error: (error) => {
+        console.error('Error al cargar gastos:', error);
+        if (typeof window !== 'undefined') {
+          alert('Error al cargar los gastos');
+        }
       }
     });
   }
@@ -131,12 +158,28 @@ export class GastoComponent implements OnInit {
         this.gastoForm.patchValue({
           costoDolar: ''
         }, { emitEvent: false });
+        
+        // Mostrar alert y abortar la carga del gasto
+        if (typeof window !== 'undefined') {
+          alert(`No se encontró cotización del dólar para la fecha ${fecha}. Por favor, verifique que la cotización esté cargada antes de continuar.`);
+        }
+        return false;
       }
     }
+    return true;
   }
 
   onSubmit() {
     if (this.gastoForm.valid) {
+      // Validar que el costo en dólares esté presente
+      const costoDolar = this.gastoForm.get('costoDolar')?.value;
+      if (!costoDolar || costoDolar <= 0) {
+        if (typeof window !== 'undefined') {
+          alert('El costo en dólares no puede estar vacío. Verifique que la cotización del dólar esté disponible para la fecha seleccionada.');
+        }
+        return;
+      }
+      
       // Convertir los valores numéricos correctamente
       const gastoData: Gasto = {
         ...this.gastoForm.value,
@@ -148,28 +191,65 @@ export class GastoComponent implements OnInit {
       
       console.log('Datos estructurados a enviar:', gastoData);
       
-      this.gastoService.crearGasto(gastoData).subscribe({
-        next: (response) => {
-          console.log('Gasto guardado exitosamente', response);
-          this.gastoForm.reset();
-          // Aquí podrías agregar un mensaje de éxito o redireccionar
-        },
-        error: (error) => {
-          console.error('Error al guardar el gasto', error);
-          console.log('Error completo:', error);
-          console.log('Datos del error:', error.error);
-          // Aquí podrías mostrar un mensaje de error al usuario
-        }
-      });
+      if (this.modoEdicion && this.editandoGasto?.id) {
+        // Modo edición - actualizar gasto existente
+        this.gastoService.updateGasto(this.editandoGasto.id, gastoData).subscribe({
+          next: (response) => {
+            console.log('Gasto actualizado exitosamente', response);
+            this.gastoForm.reset();
+            this.editandoGasto = null;
+            this.modoEdicion = false;
+            this.cargarUltimosGastos(); // Recargar la lista
+            if (typeof window !== 'undefined') {
+              alert('Gasto actualizado exitosamente');
+            }
+          },
+          error: (error) => {
+            console.error('Error al actualizar el gasto', error);
+            if (typeof window !== 'undefined') {
+              alert('Error al actualizar el gasto');
+            }
+          }
+        });
+      } else {
+        // Modo creación - crear nuevo gasto
+        this.gastoService.crearGasto(gastoData).subscribe({
+          next: (response) => {
+            console.log('Gasto guardado exitosamente', response);
+            this.gastoForm.reset();
+            this.cargarUltimosGastos(); // Recargar la lista
+            if (typeof window !== 'undefined') {
+              alert('Gasto guardado exitosamente');
+            }
+          },
+          error: (error) => {
+            console.error('Error al guardar el gasto', error);
+            console.log('Error completo:', error);
+            console.log('Datos del error:', error.error);
+            if (typeof window !== 'undefined') {
+              alert('Error al guardar el gasto');
+            }
+          }
+        });
+      }
     }
   }
 
   mostrarCampoCuotas(): boolean {
     const formaPagoId = this.gastoForm.get('formaPago')?.value;
+    if (!formaPagoId || this.formasPago.length === 0) {
+      return false;
+    }
+    
     const formaPago = this.formasPago.find(f => f.id == formaPagoId); // Usar == para comparar string/number
     console.log('Forma de pago seleccionada:', formaPago);
+    
+    if (!formaPago) {
+      return false;
+    }
+    
     // Ajusta aquí si el campo correcto es 'tipo' o 'nombre'
-    return formaPago?.tipo === 'TARJETA' || formaPago?.nombre?.toUpperCase() === 'TARJETA';
+    return formaPago.tipo === 'TARJETA' || formaPago.nombre?.toUpperCase() === 'TARJETA';
   }
 
   volverAlInicio() {
@@ -219,5 +299,58 @@ export class GastoComponent implements OnInit {
     }
     
     return forma.nombre || forma.tipo;
+  }
+
+  editarGasto(gasto: Gasto) {
+    this.editandoGasto = gasto;
+    this.modoEdicion = true;
+    
+    // Llenar el formulario con los datos del gasto
+    this.gastoForm.patchValue({
+      fecha: gasto.fecha,
+      detalle: gasto.detalle,
+      tipo: gasto.tipo,
+      costo: gasto.costo,
+      costoDolar: gasto.costoDolar,
+      formaPago: gasto.formaPago,
+      cuotas: gasto.cuotas || ''
+    });
+  }
+
+  cancelarEdicion() {
+    this.editandoGasto = null;
+    this.modoEdicion = false;
+    this.gastoForm.reset();
+  }
+
+  eliminarGasto(gasto: Gasto) {
+    if (typeof window !== 'undefined' && confirm(`¿Está seguro que desea eliminar el gasto "${gasto.detalle}"?`)) {
+      if (gasto.id) {
+        this.gastoService.deleteGasto(gasto.id).subscribe({
+          next: () => {
+            console.log('Gasto eliminado exitosamente');
+            this.cargarUltimosGastos(); // Recargar la lista
+            if (typeof window !== 'undefined') {
+              alert('Gasto eliminado exitosamente');
+            }
+          },
+          error: (error) => {
+            console.error('Error al eliminar el gasto:', error);
+            if (typeof window !== 'undefined') {
+              alert('Error al eliminar el gasto');
+            }
+          }
+        });
+      }
+    }
+  }
+
+  obtenerNombreTipo(tipo: any): string {
+    return tipo && tipo.nombre ? tipo.nombre : 'N/A';
+  }
+
+  obtenerNombreFormaPago(formaPago: any): string {
+    if (!formaPago) return 'N/A';
+    return this.formatearFormaPago(formaPago);
   }
 }

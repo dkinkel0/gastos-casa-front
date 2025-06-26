@@ -45,7 +45,18 @@ export class GastoService {
   }
 
   updateGasto(id: number, gasto: Gasto): Observable<Gasto> {
-    return this.http.put<Gasto>(`${this.apiUrl}/${id}`, gasto);
+    const gastoData = {
+      fecha: gasto.fecha,
+      detalle: gasto.detalle,
+      tipoId: gasto.tipo,
+      costo: gasto.costo,
+      costoDolar: gasto.costoDolar,
+      formaPagoId: gasto.formaPago,
+      cuotas: gasto.cuotas
+    };
+    
+    console.log('Enviando datos de actualización al backend:', gastoData);
+    return this.http.put<Gasto>(`${this.apiUrl}/${id}`, gastoData);
   }
 
   deleteGasto(id: number): Observable<void> {

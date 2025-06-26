@@ -7,7 +7,7 @@
   <div class="row">
     <!-- Formulario -->
     <div class="col-md-6">
-      <h3>Nueva Cotización</h3>
+      <h3>{{ modoEdicion ? 'Editar Cotización' : 'Nueva Cotización' }}</h3>
       <form [formGroup]="cotizacionForm" (ngSubmit)="onSubmit()" class="form-container">
         <div class="form-group">
           <label for="fecha">Fecha:</label>
@@ -44,12 +44,21 @@
         </div>
 
         
-        <button 
-          type="submit" 
-          class="btn-submit"
-          [disabled]="!cotizacionForm.valid">
-          Guardar Cotización
-        </button>
+        <div class="button-group">
+          <button 
+            type="submit" 
+            class="btn-submit"
+            [disabled]="!cotizacionForm.valid">
+            {{ modoEdicion ? 'Actualizar Cotización' : 'Guardar Cotización' }}
+          </button>
+          <button 
+            type="button" 
+            class="btn-cancel"
+            (click)="cancelarEdicion()"
+            *ngIf="modoEdicion">
+            Cancelar Edición
+          </button>
+        </div>
       </form>
 
       <!-- Formulario de Autocompletado -->
@@ -89,6 +98,7 @@
               <th>Compra</th>
               <th>Venta</th>
               <th>Intermedio</th>
+              <th>Acciones</th>
             </tr>
           </thead>
           <tbody>
@@ -98,6 +108,20 @@
                 <td>{{cotizacion.precioCompra | number:'1.2-2'}}</td>
                 <td>{{cotizacion.precioVenta | number:'1.2-2'}}</td>
                 <td>{{cotizacion.precioIntermedio | number:'1.2-2'}}</td>
+                <td>
+                  <button 
+                    type="button" 
+                    class="btn-edit"
+                    (click)="editarCotizacion(cotizacion)">
+                    Editar
+                  </button>
+                  <button 
+                    type="button" 
+                    class="btn-delete"
+                    (click)="eliminarCotizacion(cotizacion)">
+                    Eliminar
+                  </button>
+                </td>
               </tr>
             }
           </tbody>

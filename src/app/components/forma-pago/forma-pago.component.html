@@ -108,6 +108,9 @@
             <button class="btn btn-primary btn-sm" (click)="editarFormaPago(forma)">
               Editar
             </button>
+            <button class="btn btn-danger btn-sm" (click)="eliminarFormaPago(forma.id)">
+              Eliminar
+            </button>
           </td>
         </tr>
         <tr *ngIf="formasPago.length === 0">
