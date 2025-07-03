@@ -78,7 +78,7 @@
   <h3 class="mt-4">Formas de Pago Disponibles</h3>
   
   <div class="table-responsive">
-    <table class="table table-striped">
+    <table class="table">
       <thead>
         <tr>
           <th>Tipo</th>
@@ -105,12 +105,8 @@
             </span>
           </td>
           <td>
-            <button class="btn btn-primary btn-sm" (click)="editarFormaPago(forma)">
-              Editar
-            </button>
-            <button class="btn btn-danger btn-sm" (click)="eliminarFormaPago(forma.id)">
-              Eliminar
-            </button>
+            <button class="btn-edit" (click)="editarFormaPago(forma)">Editar</button>
+            <button class="btn-delete" (click)="eliminarFormaPago(forma.id)">Eliminar</button>
           </td>
         </tr>
         <tr *ngIf="formasPago.length === 0">

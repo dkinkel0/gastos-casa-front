@@ -120,48 +120,40 @@
 
 <!-- Tabla de últimos gastos -->
 <div class="gastos-table-container" *ngIf="gastos.length > 0">
-  <h3>Últimos 5 Gastos</h3>
-  <table class="gastos-table">
-    <thead>
-      <tr>
-        <th>Fecha</th>
-        <th>Detalle</th>
-        <th>Tipo</th>
-        <th>Costo (ARS)</th>
-        <th>Costo (USD)</th>
-        <th>Forma de Pago</th>
-        <th>Cuotas</th>
-        <th>Acciones</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr *ngFor="let gasto of gastos">
-        <td>{{ gasto.fecha | date:'dd/MM/yyyy' }}</td>
-        <td>{{ gasto.detalle }}</td>
-        <td>{{ obtenerNombreTipo(gasto.tipo) }}</td>
-        <td>${{ gasto.costo | number:'1.2-2' }}</td>
-        <td>${{ gasto.costoDolar | number:'1.2-2' }}</td>
-        <td>{{ obtenerNombreFormaPago(gasto.formaPago) }}</td>
-        <td>{{ gasto.cuotas || '-' }}</td>
-        <td class="acciones">
-          <button 
-            type="button" 
-            class="btn btn-edit"
-            (click)="editarGasto(gasto)"
-            title="Editar gasto">
-            ✏️
-          </button>
-          <button 
-            type="button" 
-            class="btn btn-delete"
-            (click)="eliminarGasto(gasto)"
-            title="Eliminar gasto">
-            🗑️
-          </button>
-        </td>
-      </tr>
-    </tbody>
-  </table>
+  <h3>Últimos 10 Gastos</h3>
+  <div class="cotizaciones-list">
+    <div class="table-responsive">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Fecha</th>
+            <th>Detalle</th>
+            <th>Tipo</th>
+            <th>Costo (ARS)</th>
+            <th>Costo (USD)</th>
+            <th>Forma de Pago</th>
+            <th>Cuotas</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let gasto of gastos">
+            <td>{{ gasto.fecha | date:'dd/MM/yyyy' }}</td>
+            <td>{{ gasto.detalle }}</td>
+            <td>{{ obtenerNombreTipo(gasto.tipo) }}</td>
+            <td>${{ gasto.costo | number:'1.2-2' }}</td>
+            <td>${{ gasto.costoDolar | number:'1.2-2' }}</td>
+            <td>{{ obtenerNombreFormaPago(gasto.formaPago) }}</td>
+            <td>{{ gasto.cuotas || '-' }}</td>
+            <td class="acciones">
+              <button type="button" class="btn-edit" (click)="editarGasto(gasto)">Editar</button>
+              <button type="button" class="btn-delete" (click)="eliminarGasto(gasto)">Eliminar</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
 </div>
 
 <div class="no-gastos" *ngIf="gastos.length === 0">

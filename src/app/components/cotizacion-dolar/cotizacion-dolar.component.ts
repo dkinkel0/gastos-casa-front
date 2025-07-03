@@ -86,7 +86,9 @@ export class CotizacionDolarComponent implements OnInit {
         // Modo creación - crear nueva cotización
         this.cotizacionService.createCotizacion(this.cotizacionForm.value).subscribe({
           next: () => {
-            this.cotizacionForm.reset({fecha: new Date()});
+            // Mantener la fecha actual en lugar de resetear a new Date()
+            const fechaActual = this.cotizacionForm.get('fecha')?.value;
+            this.cotizacionForm.reset({fecha: fechaActual});
             this.cargarCotizaciones();
             if (typeof window !== 'undefined') {
               alert('Cotización guardada exitosamente');
@@ -105,7 +107,12 @@ export class CotizacionDolarComponent implements OnInit {
 
   cargarCotizaciones() {
     this.cotizacionService.getAllCotizaciones().subscribe({
-      next: (data: Cotizacion[]) => this.cotizaciones = data,
+      next: (data: Cotizacion[]) => {
+        // Ordenar por fecha descendente (más recientes primero) y tomar solo las últimas 35
+        this.cotizaciones = data
+          .sort((a, b) => new Date(b.fecha).getTime() - new Date(a.fecha).getTime())
+          .slice(0, 35);
+      },
       error: (error: Error) => console.error('Error cargando cotizaciones:', error)
     });
   }
@@ -119,17 +126,13 @@ export class CotizacionDolarComponent implements OnInit {
       const fechaHasta = this.autocompleteForm.get('fechaHasta')?.value;
       const fechas = this.obtenerFechasEntre(this.FECHA_INICIAL, fechaHasta);
       
-      console.log('Fechas a procesar:', fechas.map(f => this.formatearFecha(f)));
-      
       // Ordenar cotizaciones por fecha
       const cotizacionesOrdenadas = [...this.cotizaciones].sort((a, b) => 
         new Date(a.fecha).getTime() - new Date(b.fecha).getTime()
       );
-      
-      console.log('Cotizaciones existentes:', cotizacionesOrdenadas.map(c => c.fecha));
 
-      // Crear un mapa de fechas existentes para búsqueda rápida
-      const fechasExistentes = new Set(cotizacionesOrdenadas.map(c => c.fecha));
+      // Crear un mapa de fechas existentes para búsqueda rápida (todas en formato YYYY-MM-DD)
+      const fechasExistentes = new Set(cotizacionesOrdenadas.map(c => this.formatearFecha(new Date(c.fecha))));
       
       let ultimaCotizacion: Cotizacion | null = null;
       const cotizacionesAAgregar: Cotizacion[] = [];
@@ -142,7 +145,7 @@ export class CotizacionDolarComponent implements OnInit {
       for (const fecha of fechas) {
         const fechaStr = this.formatearFecha(fecha);
         
-        // Si la fecha no existe en las cotizaciones actuales
+        // Si la fecha NO existe en las cotizaciones actuales (comparando en formato YYYY-MM-DD)
         if (!fechasExistentes.has(fechaStr)) {
           // Buscar la última cotización disponible antes de esta fecha
           const cotizacionAnterior = cotizacionesOrdenadas
@@ -154,7 +157,6 @@ export class CotizacionDolarComponent implements OnInit {
           }
 
           if (ultimaCotizacion) {
-            console.log(`Agregando cotización para ${fechaStr} usando valores de ${ultimaCotizacion.fecha}`);
             cotizacionesAAgregar.push({
               fecha: fechaStr,
               precioCompra: ultimaCotizacion.precioCompra,
@@ -164,7 +166,7 @@ export class CotizacionDolarComponent implements OnInit {
           }
         } else {
           // Actualizar la última cotización conocida
-          const cotizacionActual = cotizacionesOrdenadas.find(c => c.fecha === fechaStr);
+          const cotizacionActual = cotizacionesOrdenadas.find(c => this.formatearFecha(new Date(c.fecha)) === fechaStr);
           if (cotizacionActual) {
             ultimaCotizacion = cotizacionActual;
           }

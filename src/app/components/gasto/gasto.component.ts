@@ -126,10 +126,10 @@ export class GastoComponent implements OnInit {
   cargarUltimosGastos() {
     this.gastoService.getAllGastos().subscribe({
       next: (gastos) => {
-        // Ordenar por fecha descendente y tomar los últimos 5
+        // Ordenar por fecha descendente y tomar los últimos 150
         this.gastos = gastos
           .sort((a, b) => new Date(b.fecha).getTime() - new Date(a.fecha).getTime())
-          .slice(0, 5);
+          .slice(0, 150);
       },
       error: (error) => {
         console.error('Error al cargar gastos:', error);
@@ -216,7 +216,9 @@ export class GastoComponent implements OnInit {
         this.gastoService.crearGasto(gastoData).subscribe({
           next: (response) => {
             console.log('Gasto guardado exitosamente', response);
-            this.gastoForm.reset();
+            // Mantener la fecha actual en lugar de resetear completamente
+            const fechaActual = this.gastoForm.get('fecha')?.value;
+            this.gastoForm.reset({fecha: fechaActual});
             this.cargarUltimosGastos(); // Recargar la lista
             if (typeof window !== 'undefined') {
               alert('Gasto guardado exitosamente');

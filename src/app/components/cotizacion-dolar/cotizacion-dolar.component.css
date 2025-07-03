@@ -86,34 +86,43 @@ label {
 }
 
 .cotizaciones-list {
-  height: 400px;
-  overflow-y: auto;
   border: 1px solid #ddd;
   border-radius: 4px;
   padding: 10px;
 }
 
 .table {
-  margin-bottom: 0;
+  width: 100%;
+  border-collapse: collapse;
+  background: #fff;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+}
+
+.table th, .table td {
+  border: 1px solid #bdbdbd;
+  padding: 0.6rem 0.8rem;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .table th {
-  position: sticky;
-  top: 0;
-  background-color: #f8f9fa;
-  z-index: 1;
-  font-weight: 600;
-  color: #495057;
-  border-bottom: 2px solid #dee2e6;
-}
-
-.table td {
-  vertical-align: middle;
-  border-bottom: 1px solid #dee2e6;
+  background-color: #e3e6ea;
+  color: #222;
+  font-weight: bold;
 }
 
 .table tbody tr:hover {
-  background-color: #f8f9fa;
+  background-color: #f1f3f6;
+}
+
+.table thead tr {
+  border-bottom: 2px solid #bdbdbd;
+}
+
+.table tbody tr:last-child td {
+  border-bottom: 2px solid #bdbdbd;
 }
 
 .autocomplete-section {
@@ -171,6 +180,19 @@ label {
 .btn-delete:hover {
   background-color: #c82333;
   transform: scale(1.05);
+}
+
+/* Alinear los botones de acción en la misma línea */
+.table td .btn-edit,
+.table td .btn-delete {
+  display: inline-block;
+  margin-right: 4px;
+  vertical-align: middle;
+}
+
+.table td .btn-edit:last-child,
+.table td .btn-delete:last-child {
+  margin-right: 0;
 }
 
 /* Responsive design */

@@ -64,6 +64,7 @@ button {
 table {
   width: 100%;
   border-collapse: collapse;
+  table-layout: auto;
   margin-top: 20px;
 }
 
@@ -110,4 +111,26 @@ tr:hover {
 .back-button .icon {
     font-size: 1.2em;
     margin-bottom: 0;
+}
+
+/* Ajuste de columnas para tabla de tipos de gasto */
+table th:nth-child(1),
+table td:nth-child(1) {
+  width: 1%;
+  white-space: nowrap;
+}
+
+table th:nth-child(2),
+table td:nth-child(2) {
+  width: auto;
+  white-space: normal;
+  overflow-wrap: break-word;
+}
+
+table th:nth-child(3),
+table td:nth-child(3) {
+  min-width: 140px;
+  width: 140px;
+  text-align: center;
+  white-space: nowrap;
 }
