@@ -23,6 +23,23 @@ function yearFourDigitsValidator(control: AbstractControl): ValidationErrors | n
   return null;
 }
 
+// Validador personalizado para verificar que fechaDesde <= fechaHasta
+function fechaDesdeMenorQueHastaValidator(group: AbstractControl): ValidationErrors | null {
+  const fechaDesde = group.get('fechaDesde')?.value;
+  const fechaHasta = group.get('fechaHasta')?.value;
+  
+  if (!fechaDesde || !fechaHasta) return null;
+  
+  const desde = new Date(fechaDesde);
+  const hasta = new Date(fechaHasta);
+  
+  if (desde > hasta) {
+    return { fechaDesdeMayorQueHasta: true };
+  }
+  
+  return null;
+}
+
 @Component({
   selector: 'app-cotizacion-dolar',
   standalone: true,
@@ -37,8 +54,6 @@ export class CotizacionDolarComponent implements OnInit {
   cotizaciones: Cotizacion[] = [];
   editandoCotizacion: Cotizacion | null = null; // Cotización que se está editando
   modoEdicion = false; // Indica si estamos en modo edición
-  // Fecha inicial fija: 1 de septiembre de 2023
-  private readonly FECHA_INICIAL = new Date(2023, 8, 1); // Mes 8 = Septiembre (0-based)
 
   constructor(
     private router: Router,
@@ -52,8 +67,9 @@ export class CotizacionDolarComponent implements OnInit {
     });
 
     this.autocompleteForm = this.fb.group({
+      fechaDesde: [new Date(2023, 8, 1), [Validators.required, yearFourDigitsValidator]],
       fechaHasta: [new Date(), [Validators.required, yearFourDigitsValidator]]
-    });
+    }, { validators: fechaDesdeMenorQueHastaValidator });
   }
 
   ngOnInit() {
@@ -123,8 +139,9 @@ export class CotizacionDolarComponent implements OnInit {
 
   autocompletarCotizaciones() {
     if (this.autocompleteForm.valid) {
+      const fechaDesde = this.autocompleteForm.get('fechaDesde')?.value;
       const fechaHasta = this.autocompleteForm.get('fechaHasta')?.value;
-      const fechas = this.obtenerFechasEntre(this.FECHA_INICIAL, fechaHasta);
+      const fechas = this.obtenerFechasEntre(fechaDesde, fechaHasta);
       
       // Ordenar cotizaciones por fecha
       const cotizacionesOrdenadas = [...this.cotizaciones].sort((a, b) => 
@@ -235,7 +252,7 @@ export class CotizacionDolarComponent implements OnInit {
         console.log('Fechas disponibles:', fechas.map((f: Date) => this.formatearFecha(f)));
         console.log('Fechas existentes:', Array.from(fechasExistentes));
         if (typeof window !== 'undefined') {
-          alert('No se encontraron fechas para autocompletar. Verifica que haya fechas entre el 01-09-2023 y la fecha seleccionada.');
+          alert('No se encontraron fechas para autocompletar. Verifica que haya fechas entre las fechas seleccionadas.');
         }
       }
     }

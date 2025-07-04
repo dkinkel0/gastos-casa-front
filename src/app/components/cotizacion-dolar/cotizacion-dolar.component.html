@@ -66,6 +66,18 @@
         <h3>Autocompletar Cotizaciones</h3>
         <form [formGroup]="autocompleteForm" (ngSubmit)="autocompletarCotizaciones()" class="form-container">
           <div class="form-group">
+            <label for="fechaDesde">Autocompletar desde:</label>
+            <input 
+              type="date" 
+              id="fechaDesde" 
+              formControlName="fechaDesde"
+              class="form-control">
+          </div>
+          <div *ngIf="autocompleteForm.get('fechaDesde')?.hasError('yearFourDigits') && autocompleteForm.get('fechaDesde')?.touched" class="error-message">
+            El año debe tener 4 dígitos.
+          </div>
+          
+          <div class="form-group">
             <label for="fechaHasta">Autocompletar hasta:</label>
             <input 
               type="date" 
@@ -75,6 +87,10 @@
           </div>
           <div *ngIf="autocompleteForm.get('fechaHasta')?.hasError('yearFourDigits') && autocompleteForm.get('fechaHasta')?.touched" class="error-message">
             El año debe tener 4 dígitos.
+          </div>
+          
+          <div *ngIf="autocompleteForm.hasError('fechaDesdeMayorQueHasta') && autocompleteForm.get('fechaDesde')?.touched && autocompleteForm.get('fechaHasta')?.touched" class="error-message">
+            La fecha de inicio debe ser menor o igual que la fecha de fin.
           </div>
           
           <button 

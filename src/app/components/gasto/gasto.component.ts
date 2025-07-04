@@ -7,6 +7,11 @@ import { TipoGastoService } from '../../services/tipo-gasto.service';
 import { FormaPagoService, FormaPago } from '../../services/forma-pago.service';
 import { CotizacionService, Cotizacion } from '../../services/cotizacion.service';
 
+// Función utilitaria fuera de la clase y antes de la exportación
+function capitalizeFirstLetter(str: string) {
+  return str.charAt(0).toUpperCase() + str.slice(1);
+}
+
 @Component({
   selector: 'app-gasto',
   standalone: true,
@@ -278,28 +283,22 @@ export class GastoComponent implements OnInit {
     if (forma.tipo === 'EFECTIVO') {
       return 'EFECTIVO';
     }
-    
     if (forma.tipo === 'TARJETA') {
-      // Formatear fecha de cierre
+      // Formatear fecha de cierre correctamente desde string YYYY-MM-DD
       let fechaCierreTexto = '';
-      if (forma.fechaCierre) {
-        const fecha = new Date(forma.fechaCierre);
-        const dia = fecha.getDate();
-        const mes = fecha.toLocaleDateString('es-ES', { month: 'long' });
-        fechaCierreTexto = `${dia}-${mes.charAt(0).toUpperCase() + mes.slice(1)}`;
+      if (forma.fechaCierre && typeof forma.fechaCierre === 'string' && forma.fechaCierre.match(/^\d{4}-\d{2}-\d{2}$/)) {
+        const [anio, mes, dia] = forma.fechaCierre.split('-');
+        const mesNombre = new Date(0, parseInt(mes, 10) - 1).toLocaleString('es-ES', { month: 'long' });
+        fechaCierreTexto = `${dia}-${capitalizeFirstLetter(mesNombre)}`;
       }
-      
-      // Construir el texto según el formato especificado
       const partes = [
         fechaCierreTexto,
         forma.banco,
         forma.marcaTarjeta,
         forma.titular
       ].filter(parte => parte && parte.trim() !== '');
-      
       return partes.join('-');
     }
-    
     return forma.nombre || forma.tipo;
   }
 
@@ -353,6 +352,15 @@ export class GastoComponent implements OnInit {
 
   obtenerNombreFormaPago(formaPago: any): string {
     if (!formaPago) return 'N/A';
-    return this.formatearFormaPago(formaPago);
+
+    // Si es un objeto con tipo, úsalo directamente
+    if (typeof formaPago === 'object' && formaPago.tipo) {
+      return this.formatearFormaPago(formaPago);
+    }
+
+    // Si es un ID, búscalo en el array
+    const forma = this.formasPago.find(f => f.id == formaPago);
+    if (!forma) return 'N/A';
+    return this.formatearFormaPago(forma);
   }
 }
