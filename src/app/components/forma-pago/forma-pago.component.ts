@@ -73,8 +73,24 @@ export class FormaPagoComponent implements OnInit {
     this.formaPagoService.obtenerFormasPago()
       .subscribe({
         next: (formas) => {
-          this.formasPago = formas;
-         // console.log('Formas de pago cargadas:', formas);
+          // Separar EFECTIVO del resto
+          const formasEfectivo = formas.filter(f => f.tipo === 'EFECTIVO');
+          const formasTarjeta = formas.filter(f => f.tipo !== 'EFECTIVO');
+          
+          // Ordenar tarjetas por fecha de cierre (más reciente primero)
+          formasTarjeta.sort((a, b) => {
+            if (!a.fechaCierre && !b.fechaCierre) return 0;
+            if (!a.fechaCierre) return 1;
+            if (!b.fechaCierre) return -1;
+            
+            const fechaA = new Date(a.fechaCierre);
+            const fechaB = new Date(b.fechaCierre);
+            return fechaB.getTime() - fechaA.getTime(); // Orden descendente
+          });
+          
+          // Combinar: EFECTIVO primero, luego tarjetas ordenadas
+          this.formasPago = [...formasEfectivo, ...formasTarjeta];
+          // console.log('Formas de pago cargadas:', this.formasPago);
         },
         error: (error) => {
           console.error('Error al cargar formas de pago:', error);

@@ -1,0 +1,119 @@
+<div class="ver-gastos-container">
+  <div class="header">
+    <h1>Ver Gastos</h1>
+    <button (click)="volverAlInicio()" class="btn-volver">← Volver al Inicio</button>
+  </div>
+
+  <!-- Formularios de búsqueda -->
+  <div class="formularios-container">
+    <!-- Formulario por rango de fechas -->
+    <div class="formulario-seccion">
+      <h3>Buscar por Rango de Fechas</h3>
+      <form [formGroup]="formularioRangoFechas" (ngSubmit)="buscarPorRangoFechas()" class="formulario">
+        <div class="form-group">
+          <label for="fechaInicio">Fecha de Inicio:</label>
+          <input 
+            type="date" 
+            id="fechaInicio" 
+            formControlName="fechaInicio" 
+            class="form-control"
+            required>
+        </div>
+        
+        <div class="form-group">
+          <label for="fechaFin">Fecha de Fin:</label>
+          <input 
+            type="date" 
+            id="fechaFin" 
+            formControlName="fechaFin" 
+            class="form-control"
+            required>
+        </div>
+        
+        <button 
+          type="submit" 
+          [disabled]="!formularioRangoFechas.valid || cargando"
+          class="btn-buscar">
+          {{ cargando ? 'Buscando...' : 'Buscar por Fechas' }}
+        </button>
+      </form>
+    </div>
+
+    <!-- Formulario por cantidad -->
+    <div class="formulario-seccion">
+      <h3>Buscar Últimos Gastos</h3>
+      <form [formGroup]="formularioCantidad" (ngSubmit)="buscarPorCantidad()" class="formulario">
+        <div class="form-group">
+          <label for="cantidad">Cantidad de gastos:</label>
+          <input 
+            type="number" 
+            id="cantidad" 
+            formControlName="cantidad" 
+            class="form-control"
+            min="1" 
+            max="1000"
+            required>
+        </div>
+        
+        <button 
+          type="submit" 
+          [disabled]="!formularioCantidad.valid || cargando"
+          class="btn-buscar">
+          {{ cargando ? 'Buscando...' : 'Buscar Últimos Gastos' }}
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Botón para limpiar resultados -->
+  <div class="acciones-container" *ngIf="gastos.length > 0">
+    <button (click)="limpiarResultados()" class="btn-limpiar">
+      Limpiar Resultados
+    </button>
+  </div>
+
+  <!-- Resultados -->
+  <div class="resultados-container" *ngIf="gastos.length > 0">
+    <h3>
+      {{ modoBusqueda === 'rango' ? 'Gastos por Rango de Fechas' : 'Últimos Gastos' }}
+      ({{ gastos.length }} gastos encontrados)
+    </h3>
+
+    <div class="tabla-container">
+      <table class="tabla-gastos">
+        <thead>
+          <tr>
+            <th>Fecha</th>
+            <th>Detalle</th>
+            <th>Tipo</th>
+            <th>Costo (ARS)</th>
+            <th>Costo (USD)</th>
+            <th>Forma de Pago</th>
+            <th>Cuotas</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let gasto of gastos">
+            <td>{{ gasto.fecha | date:'dd/MM/yyyy' }}</td>
+            <td>{{ gasto.detalle }}</td>
+            <td>{{ obtenerNombreTipo(gasto.tipo) }}</td>
+            <td>${{ gasto.costo | number:'1.2-2' }}</td>
+            <td>${{ gasto.costoDolar | number:'1.2-2' }}</td>
+            <td>{{ obtenerNombreFormaPago(gasto.formaPago) }}</td>
+            <td>{{ gasto.cuotas || '-' }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Mensaje cuando no hay resultados -->
+  <div class="sin-resultados" *ngIf="modoBusqueda && gastos.length === 0 && !cargando">
+    <p>No se encontraron gastos con los criterios especificados.</p>
+  </div>
+
+  <!-- Indicador de carga -->
+  <div class="cargando" *ngIf="cargando">
+    <p>Cargando gastos...</p>
+  </div>
+</div> 

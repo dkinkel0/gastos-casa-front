@@ -14,7 +14,7 @@ export class HomeComponent {
   constructor(private router: Router) {}
 
   navegarA(ruta: string) {
-    if (ruta === '/cotizacion-dolar' || ruta === '/configuracion' || ruta === '/gasto') {
+    if (ruta === '/cotizacion-dolar' || ruta === '/configuracion' || ruta === '/gasto' || ruta === '/ver-gastos') {
       this.router.navigate([ruta]);
     } else {
       alert('Funcionalidad en desarrollo');

@@ -62,4 +62,14 @@ export class GastoService {
   deleteGasto(id: number): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/${id}`);
   }
+
+  // Obtener gastos por rango de fechas
+  getGastosPorRangoFechas(fechaInicio: string, fechaFin: string): Observable<Gasto[]> {
+    return this.http.get<Gasto[]>(`${this.apiUrl}/rango-fechas?fechaInicio=${fechaInicio}&fechaFin=${fechaFin}`);
+  }
+
+  // Obtener los últimos X gastos
+  getUltimosGastos(cantidad: number): Observable<Gasto[]> {
+    return this.http.get<Gasto[]>(`${this.apiUrl}/ultimos?cantidad=${cantidad}`);
+  }
 }

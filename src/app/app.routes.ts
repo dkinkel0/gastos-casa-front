@@ -28,5 +28,10 @@ export const routes: Routes = [
     component: TipoGastoComponent
   },
   { path: 'forma-pago', component: FormaPagoComponent },
-  { path: 'gasto', component: GastoComponent }
+  { path: 'gasto', component: GastoComponent },
+  {
+    path: 'ver-gastos',
+    loadComponent: () => import('./components/ver-gastos/ver-gastos.component')
+      .then(m => m.VerGastosComponent)
+  }
 ];

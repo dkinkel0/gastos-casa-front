@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -20,7 +20,9 @@ function capitalizeFirstLetter(str: string) {
   styleUrl: './gasto.component.css'
 })
 
-export class GastoComponent implements OnInit {
+export class GastoComponent implements OnInit, AfterViewInit {
+  @ViewChild('detalleInput', { static: false }) detalleInput!: ElementRef;
+  
   gastoForm: FormGroup;
   tiposGasto: any[] = [];
   formasPago: FormaPago[] = [];
@@ -72,6 +74,14 @@ export class GastoComponent implements OnInit {
     this.cargarFormasPago();
     this.cargarCotizaciones();
     this.cargarUltimosGastos();
+  }
+
+  ngAfterViewInit() {
+    setTimeout(() => {
+      if (this.detalleInput) {
+        this.detalleInput.nativeElement.focus();
+      }
+    });
   }
 
   cargarTiposGasto() {
@@ -208,6 +218,11 @@ export class GastoComponent implements OnInit {
             if (typeof window !== 'undefined') {
               alert('Gasto actualizado exitosamente');
             }
+            setTimeout(() => {
+              if (this.detalleInput) {
+                this.detalleInput.nativeElement.focus();
+              }
+            });
           },
           error: (error) => {
             console.error('Error al actualizar el gasto', error);
@@ -228,6 +243,11 @@ export class GastoComponent implements OnInit {
             if (typeof window !== 'undefined') {
               alert('Gasto guardado exitosamente');
             }
+            setTimeout(() => {
+              if (this.detalleInput) {
+                this.detalleInput.nativeElement.focus();
+              }
+            });
           },
           error: (error) => {
             console.error('Error al guardar el gasto', error);
@@ -322,6 +342,11 @@ export class GastoComponent implements OnInit {
     this.editandoGasto = null;
     this.modoEdicion = false;
     this.gastoForm.reset();
+    setTimeout(() => {
+      if (this.detalleInput) {
+        this.detalleInput.nativeElement.focus();
+      }
+    });
   }
 
   eliminarGasto(gasto: Gasto) {
