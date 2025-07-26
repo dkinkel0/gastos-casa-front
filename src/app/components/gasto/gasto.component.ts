@@ -144,7 +144,7 @@ export class GastoComponent implements OnInit, AfterViewInit {
         // Ordenar por fecha descendente y tomar los últimos 150
         this.gastos = gastos
           .sort((a, b) => new Date(b.fecha).getTime() - new Date(a.fecha).getTime())
-          .slice(0, 150);
+          .slice(0, 200);
       },
       error: (error) => {
         console.error('Error al cargar gastos:', error);
