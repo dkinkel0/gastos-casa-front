@@ -33,5 +33,10 @@ export const routes: Routes = [
     path: 'ver-gastos',
     loadComponent: () => import('./components/ver-gastos/ver-gastos.component')
       .then(m => m.VerGastosComponent)
+  },
+  {
+    path: 'ver-historico',
+    loadComponent: () => import('./components/ver-historico/ver-historico.component')
+      .then(m => m.VerHistoricoComponent)
   }
 ];

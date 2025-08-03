@@ -1,0 +1,46 @@
+<div class="ver-historico-container">
+  <div class="header">
+    <h1>Ver Histórico de Gastos</h1>
+    <button (click)="volverAlInicio()" class="btn-volver">← Volver al Inicio</button>
+  </div>
+
+  <!-- Indicador de carga -->
+  <div class="cargando" *ngIf="cargando">
+    <p>Cargando histórico de gastos...</p>
+  </div>
+
+  <!-- Mensaje de error -->
+  <div class="error" *ngIf="error">
+    <p>{{ error }}</p>
+  </div>
+
+  <!-- Tabla de resultados -->
+  <div class="resultados-container" *ngIf="gastosPorMes.length > 0 && !cargando">
+    <h3>Histórico de Gastos por Mes (Pesos/USD)</h3>
+
+    <div class="tabla-container">
+      <table class="tabla-historico">
+        <thead>
+          <tr>
+            <th>Mes-Año</th>
+            <th *ngFor="let tipo of tiposGasto">{{ tipo.nombre }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let mes of gastosPorMes">
+            <td><strong>{{ formatearMes(mes.mes) }}</strong></td>
+            <td *ngFor="let tipo of tiposGasto">
+              ${{ formatearNumero(obtenerValorPorMesYTipo(mes.mes, tipo).pesos) }} U$S{{ formatearNumero(obtenerValorPorMesYTipo(mes.mes, tipo).dolares) }}
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Mensaje cuando no hay resultados -->
+  <div class="sin-resultados" *ngIf="!cargando && gastosPorMes.length === 0">
+    <p>No se encontraron datos históricos de gastos.</p>
+    <p>Ejecuta "Recalcular Histórico" en Configuración para generar los datos.</p>
+  </div>
+</div> 

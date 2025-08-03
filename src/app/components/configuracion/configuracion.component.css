@@ -33,6 +33,25 @@ h2 {
     transform: translateY(-2px);
 }
 
+.config-button:disabled {
+    background-color: #6c757d;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.config-button.warning {
+    background-color: #dc3545;
+    color: white;
+}
+
+.config-button.warning:hover {
+    background-color: #c82333;
+}
+
+.config-button.warning:disabled {
+    background-color: #6c757d;
+}
+
 .icon {
     font-size: 2em;
     margin-bottom: 10px;
