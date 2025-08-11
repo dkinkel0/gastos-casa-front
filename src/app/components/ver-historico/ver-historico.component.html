@@ -16,21 +16,21 @@
 
   <!-- Tabla de resultados -->
   <div class="resultados-container" *ngIf="gastosPorMes.length > 0 && !cargando">
-    <h3>Histórico de Gastos por Mes (Pesos/USD)</h3>
+    <h3>Histórico de Gastos por Tipo y Mes (Pesos/USD)</h3>
 
     <div class="tabla-container">
       <table class="tabla-historico">
         <thead>
           <tr>
-            <th>Mes-Año</th>
-            <th *ngFor="let tipo of tiposGasto">{{ tipo.nombre }}</th>
+            <th>Tipo de Gasto</th>
+            <th *ngFor="let mes of gastosPorMes">{{ formatearMes(mes.mes) }}</th>
           </tr>
         </thead>
         <tbody>
-          <tr *ngFor="let mes of gastosPorMes">
-            <td><strong>{{ formatearMes(mes.mes) }}</strong></td>
-            <td *ngFor="let tipo of tiposGasto">
-              ${{ formatearNumero(obtenerValorPorMesYTipo(mes.mes, tipo).pesos) }} U$S{{ formatearNumero(obtenerValorPorMesYTipo(mes.mes, tipo).dolares) }}
+          <tr *ngFor="let tipo of tiposGasto">
+            <td><strong>{{ tipo.nombre }}</strong></td>
+            <td *ngFor="let mes of gastosPorMes">
+              ${{ formatearNumero(obtenerValorPorMesYTipo(mes.mes, tipo).pesos) }} / U$S{{ formatearNumero(obtenerValorPorMesYTipo(mes.mes, tipo).dolares) }}
             </td>
           </tr>
         </tbody>

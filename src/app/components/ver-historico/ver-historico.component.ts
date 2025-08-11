@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { CommonModule, DecimalPipe } from '@angular/common';
+import { CommonModule } from '@angular/common';
 import { GastoPorMesService } from '../../services/gasto-por-mes.service';
 import { TipoGastoService } from '../../services/tipo-gasto.service';
 
@@ -8,7 +8,7 @@ import { TipoGastoService } from '../../services/tipo-gasto.service';
   selector: 'app-ver-historico',
   templateUrl: './ver-historico.component.html',
   styleUrls: ['./ver-historico.component.css'],
-  imports: [CommonModule, DecimalPipe],
+  imports: [CommonModule],
   standalone: true
 })
 export class VerHistoricoComponent implements OnInit {
