@@ -92,15 +92,15 @@ export class VerHistoricoComponent implements OnInit {
       });
     });
     
-    // Llenar con los datos reales
+    // Llenar con los datos reales (API puede devolver números o strings según serialización)
     data.forEach(item => {
       const mes = item.mesAño;
       const tipoNombre = item.tipoGastoNombre;
       
       if (datosPorMes.has(mes)) {
         datosPorMes.get(mes)!.set(tipoNombre, {
-          pesos: item.totalPesos,
-          dolares: item.totalDolares
+          pesos: Number(item.totalPesos),
+          dolares: Number(item.totalDolares)
         });
       }
     });
@@ -138,7 +138,9 @@ export class VerHistoricoComponent implements OnInit {
     return `${meses[parseInt(mes) - 1]} ${ano}`;
   }
 
-  formatearNumero(numero: number): string {
+  formatearNumero(valor: number | string | null | undefined): string {
+    const n = Number(valor);
+    const numero = Number.isFinite(n) ? n : 0;
     return numero.toLocaleString('es-AR', {
       minimumFractionDigits: 0,
       maximumFractionDigits: 2

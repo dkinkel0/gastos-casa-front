@@ -27,12 +27,22 @@
           </tr>
         </thead>
         <tbody>
-          <tr *ngFor="let tipo of tiposGasto">
-            <td><strong>{{ tipo.nombre }}</strong></td>
-            <td *ngFor="let mes of gastosPorMes">
-              ${{ formatearNumero(obtenerValorPorMesYTipo(mes.mes, tipo).pesos) }} / U$S{{ formatearNumero(obtenerValorPorMesYTipo(mes.mes, tipo).dolares) }}
-            </td>
-          </tr>
+          <ng-container *ngFor="let tipo of tiposGasto">
+            <!-- Fila para pesos -->
+            <tr>
+              <td><strong>{{ tipo.nombre }} (Pesos)</strong></td>
+              <td *ngFor="let mes of gastosPorMes">
+                ${{ formatearNumero(obtenerValorPorMesYTipo(mes.mes, tipo).pesos) }}
+              </td>
+            </tr>
+            <!-- Fila para dólares -->
+            <tr>
+              <td><em>{{ tipo.nombre }} (USD)</em></td>
+              <td *ngFor="let mes of gastosPorMes">
+                U$S{{ formatearNumero(obtenerValorPorMesYTipo(mes.mes, tipo).dolares) }}
+              </td>
+            </tr>
+          </ng-container>
         </tbody>
       </table>
     </div>
@@ -41,6 +51,6 @@
   <!-- Mensaje cuando no hay resultados -->
   <div class="sin-resultados" *ngIf="!cargando && gastosPorMes.length === 0">
     <p>No se encontraron datos históricos de gastos.</p>
-    <p>Ejecuta "Recalcular Histórico" en Configuración para generar los datos.</p>
+    <p>En la pantalla <strong>Calcular</strong> podés usar &quot;Recalcular histórico&quot; o &quot;Calcular mes&quot; para generar los datos.</p>
   </div>
 </div> 

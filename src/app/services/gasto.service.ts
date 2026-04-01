@@ -71,5 +71,8 @@ export class GastoService {
   // Obtener los últimos X gastos
   getUltimosGastos(cantidad: number): Observable<Gasto[]> {
     return this.http.get<Gasto[]>(`${this.apiUrl}/ultimos?cantidad=${cantidad}`);
+    //localhost:8585/api/gasto/ultimos?cantidad=5
+    // haz una peticion GET y cuando lleguen los datos tratalos como array de objeto Gasto
+    
   }
 }

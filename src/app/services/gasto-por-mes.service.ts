@@ -27,6 +27,13 @@ export class GastoPorMesService {
   }
 
   /**
+   * Recalcula y guarda gastos por mes para el mes indicado (formato yyyy-MM).
+   */
+  calcularMes(mesAño: string): Observable<string> {
+    return this.http.post(`${this.baseUrl}/calcular-mes/${mesAño}`, {}, { responseType: 'text' });
+  }
+
+  /**
    * Obtiene los gastos por mes para un mes específico
    * @param mesAño formato "2024-01"
    * @returns Observable con la lista de gastos por mes
@@ -43,4 +50,6 @@ export class GastoPorMesService {
   obtenerGastosPorRangoMeses(meses: string[]): Observable<any[]> {
     return this.http.post<any[]>(`${this.baseUrl}/rango-meses`, { meses });
   }
+
+  
 } 

@@ -139,12 +139,10 @@ export class GastoComponent implements OnInit, AfterViewInit {
   }
 
   cargarUltimosGastos() {
-    this.gastoService.getAllGastos().subscribe({
+    this.gastoService.getUltimosGastos(200).subscribe({
       next: (gastos) => {
         // Ordenar por fecha descendente y tomar los últimos 150
-        this.gastos = gastos
-          .sort((a, b) => new Date(b.fecha).getTime() - new Date(a.fecha).getTime())
-          .slice(0, 200);
+        this.gastos = gastos 
       },
       error: (error) => {
         console.error('Error al cargar gastos:', error);

@@ -52,6 +52,32 @@ h2 {
     background-color: #6c757d;
 }
 
+.config-button.info {
+    background-color: #17a2b8;
+    color: white;
+}
+
+.config-button.info:hover {
+    background-color: #138496;
+}
+
+.config-button.info:disabled {
+    background-color: #6c757d;
+}
+
+.config-button.debug {
+    background-color: #6f42c1;
+    color: white;
+}
+
+.config-button.debug:hover {
+    background-color: #5a32a3;
+}
+
+.config-button.debug:disabled {
+    background-color: #6c757d;
+}
+
 .icon {
     font-size: 2em;
     margin-bottom: 10px;

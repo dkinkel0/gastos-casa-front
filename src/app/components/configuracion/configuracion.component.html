@@ -11,13 +11,7 @@
             <span class="icon">📝</span>
             <span>Tipo de Gasto</span>
         </button>
-
-        <button (click)="recalcularHistorico()" 
-                [disabled]="isCalculando" 
-                class="config-button warning">
-            <span class="icon">{{ isCalculando ? '⏳' : '🔄' }}</span>
-            <span>{{ isCalculando ? 'Calculando...' : 'Recalcular Histórico' }}</span>
-        </button>
+            
     </div>
 
     <div class="back-button-container">

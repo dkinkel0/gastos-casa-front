@@ -38,5 +38,10 @@ export const routes: Routes = [
     path: 'ver-historico',
     loadComponent: () => import('./components/ver-historico/ver-historico.component')
       .then(m => m.VerHistoricoComponent)
+  },
+  {
+    path: 'calcular',
+    loadComponent: () => import('./components/calcular/calcular.component')
+      .then(m => m.CalcularComponent)
   }
 ];

@@ -1,0 +1,50 @@
+<div class="calcular-container">
+  <div class="header">
+    <h1>Calcular gastos por mes</h1>
+    <button type="button" (click)="volverAlInicio()" class="btn-secundario">← Volver al inicio</button>
+  </div>
+
+  <p class="intro">
+    Los totales por tipo de gasto (pesos y dólares) se guardan en la base como &quot;gasto por mes&quot;.
+    Podés recalcular todo el histórico o un solo mes.
+  </p>
+
+  <div class="acciones">
+    <div class="bloque">
+      <h2>Histórico completo</h2>
+      <p>Recalcula mes a mes desde septiembre 2023 hasta el mes actual (misma lógica que ya tenías en el backend).</p>
+      <button
+        type="button"
+        class="btn-principal btn-peligro"
+        (click)="recalcularHistorico()"
+        [disabled]="isRecalculandoHistorico || isCalculandoMes">
+        {{ isRecalculandoHistorico ? 'Recalculando…' : 'Recalcular histórico' }}
+      </button>
+    </div>
+
+    <div class="bloque">
+      <h2>Un mes</h2>
+      <p>Elegí mes y año (mismo criterio que la fecha al cargar un gasto).</p>
+      <div class="fila-mes">
+        <label for="mesAno">Mes / año</label>
+        <input
+          id="mesAno"
+          type="month"
+          [(ngModel)]="mesSeleccion"
+          class="input-mes"
+          [disabled]="isRecalculandoHistorico || isCalculandoMes" />
+        <button
+          type="button"
+          class="btn-principal"
+          (click)="calcularMesElegido()"
+          [disabled]="isRecalculandoHistorico || isCalculandoMes || !mesSeleccion">
+          {{ isCalculandoMes ? 'Calculando…' : 'Calcular mes' }}
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="pie">
+    <button type="button" class="btn-secundario" (click)="irVerHistorico()">Ver histórico</button>
+  </div>
+</div>
